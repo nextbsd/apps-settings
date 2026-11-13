@@ -1,7 +1,9 @@
 # apps-settings
 
 NextBSD's settings apps. Each top-level directory is a separate GNUstep
-application, installed in `/System/Applications`:
+application. For now they install in `~/Applications` with the other desktop
+apps, through [nextbsd-gnustep-apps](https://github.com/pkgdemon/nextbsd-gnustep-apps);
+they move to `/System/Applications` once they have been tested on their own:
 
 | Directory  | App            | What it sets                                   |
 |------------|----------------|------------------------------------------------|
@@ -15,11 +17,11 @@ app listed in its `SUBPROJECTS`.
 
 ## Building
 
-With the GNUstep build environment sourced:
+As your normal user, with the GNUstep build environment sourced:
 
 ```sh
 gmake
-gmake install GNUSTEP_INSTALLATION_DOMAIN=SYSTEM
+gmake install GNUSTEP_INSTALLATION_DOMAIN=USER
 ```
 
 `DESTDIR=/some/root` stages the install elsewhere. A single app can be

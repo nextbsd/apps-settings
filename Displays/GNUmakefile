@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: BSD-2-Clause
 #
 # Displays.app: the display's "looks like" size (HiDPI scaling), set
-# through NextBSD's WindowServer. Installed in the SYSTEM domain's
-# applications, /System/Applications on NextBSD.
+# through NextBSD's WindowServer. Installed like the other desktop apps,
+# in the USER domain (~/Applications) for now.
 
 ifeq ($(GNUSTEP_MAKEFILES),)
  GNUSTEP_MAKEFILES := $(shell gnustep-config --variable=GNUSTEP_MAKEFILES)
