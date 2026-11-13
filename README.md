@@ -5,7 +5,10 @@ application, installed in `/System/Applications`:
 
 | Directory  | App            | What it sets                                   |
 |------------|----------------|------------------------------------------------|
-| (none yet) |                |                                                |
+| `Displays/` | Displays.app   | The display's "looks like" size (HiDPI scaling) |
+
+Displays talks to NextBSD's WindowServer through its client library
+(`libWindowServerClient`, found with `pkg-config WindowServerClient`).
 
 The top-level `GNUmakefile` is a gnustep-make aggregate that builds every
 app listed in its `SUBPROJECTS`.

@@ -9,6 +9,6 @@ ifeq ($(GNUSTEP_MAKEFILES),)
 endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
-SUBPROJECTS =
+SUBPROJECTS = Displays
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make

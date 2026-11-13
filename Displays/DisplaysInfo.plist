@@ -1,0 +1,18 @@
+{
+  ApplicationName = Displays;
+  ApplicationDescription = "Display settings for NextBSD";
+  ApplicationRelease = "27.0";
+  Authors = ("Joseph Maloney <pkgdemonteam@gmail.com>");
+  URL = "License: BSD 2-Clause";
+  Copyright = "Copyright (C) 2026 Joseph Maloney";
+  NSHumanReadableCopyright = "Copyright (C) 2026 Joseph Maloney";
+  NSPrincipalClass = NSApplication;
+  NSIcon = "Displays.png";
+  CFBundleIconFile = "Displays.png";
+  NSExecutable = Displays;
+  CFBundleIdentifier = "org.nextbsd.Displays";
+  CFBundleName = Displays;
+  CFBundleDisplayName = Displays;
+  CFBundleShortVersionString = "27.0";
+  CFBundleVersion = "27.0";
+}
