@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  *
  * KBConnection: a tool connection to WindowServer (WS_CONNECT_CONTROL,
- * as wsctl's) for Keyboard and its Input menu, beside the GNUstep
- * backend's own.
+ * as wsctl's) for Keyboard, beside the GNUstep backend's own.
  *
  * It reads WindowServer's keyboard settings ("Settings" in
  * apps-windowserver's WSProtocol.h) and the layout list, changes them
@@ -13,8 +12,8 @@
  * WS_EVENT_KEYBOARD_LAYOUT). When WindowServer goes away it tries again
  * every few seconds.
  *
- * Built into Keyboard.app and into Input.dockextra, which runs in the
- * Dock's process.
+ * The Dock's Input menu (apps-dock Extras/Input) has a copy of the
+ * layout half, DockInputConnection.
  *
  * Copied from Displays' DSDisplayConnection (connecting, retrying,
  * watching the socket on the run loop); a settings framework (#627)

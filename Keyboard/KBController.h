@@ -7,7 +7,7 @@
  *   - Input Sources: the layouts, up to four, added from
  *     xkeyboard-config's list, removed, dragged into order and switched
  *     to; the keys that switch between them; whether the Dock shows the
- *     Input menu;
+ *     Input menu (its Input extra, through NBDockExtra);
  *   - Keyboard: key repeat rate and delay; what Caps Lock does; Command
  *     and Option swapped for PC keyboards;
  *   - Shortcuts: the keyboard shortcuts there are, read-only for now.
@@ -21,6 +21,7 @@
 #import <AppKit/AppKit.h>
 #import "KBConnection.h"
 #import "KBSourcePicker.h"
+#import "NBDockExtra.h"
 
 @interface KBController : NSObject <KBConnectionDelegate,
                                     KBSourcePickerDelegate>
@@ -38,7 +39,8 @@
      the system's), the user's defaults, and Show Input menu. */
   NSDictionary *launchSession;
   NSDictionary *launchDefaults;
-  id launchShowMenu;
+  BOOL launchShowsMenu;
+  NBDockExtra *dockExtra;	/* the Dock's Input menu */
   BOOL changed;
 
   /* Controls, in the window (not retained). */

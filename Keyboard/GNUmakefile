@@ -6,24 +6,25 @@
 # org.nextbsd.WindowServer defaults. Installed like the other desktop
 # apps, in the USER domain (~/Applications) for now.
 #
-# InputMenu/ is the Dock's Input menu, Input.dockextra, built and
-# installed with the app (into ~/Library/DockExtras).
+# The Dock's Input menu (Input.dockextra) ships with the Dock now
+# (apps-dock Extras/Input). "Show Input menu in Dock" asks the Dock to
+# show or hide it, through Shared/NBDockExtra.
 
 ifeq ($(GNUSTEP_MAKEFILES),)
  GNUSTEP_MAKEFILES := $(shell gnustep-config --variable=GNUSTEP_MAKEFILES)
 endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
-SUBPROJECTS = InputMenu
-
 APP_NAME = Keyboard
 Keyboard_OBJC_FILES = main.m KBController.m KBConnection.m \
-	KBXkbRegistry.m KBSourcePicker.m
+	KBXkbRegistry.m KBSourcePicker.m NBDockExtra.m
 Keyboard_HEADER_FILES = KBController.h KBConnection.h KBXkbRegistry.h \
 	KBSourcePicker.h KBShared.h
 Keyboard_RESOURCE_FILES = Resources/Keyboard.png
 Keyboard_APPLICATION_ICON = Keyboard.png
 Keyboard_OBJCFLAGS = -Wall -Wextra -Wno-unused-parameter
+Keyboard_INCLUDE_DIRS = -I../Shared
+vpath NBDockExtra.m ../Shared
 
 # WindowServer's client library (apps-windowserver).
 ADDITIONAL_OBJCFLAGS += $(shell pkg-config --cflags WindowServerClient 2>/dev/null)
@@ -34,5 +35,4 @@ SYSTEM_LIBDIR = /usr/lib/system
 ADDITIONAL_LDFLAGS += -L$(SYSTEM_LIBDIR) -Wl,-rpath,$(SYSTEM_LIBDIR)
 Keyboard_GUI_LIBS += -lnotify
 
-include $(GNUSTEP_MAKEFILES)/aggregate.make
 include $(GNUSTEP_MAKEFILES)/application.make

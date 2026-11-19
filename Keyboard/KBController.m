@@ -289,7 +289,8 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
   RELEASE (layouts);
   RELEASE (launchSession);
   RELEASE (launchDefaults);
-  RELEASE (launchShowMenu);
+  [dockExtra invalidate];
+  RELEASE (dockExtra);
   RELEASE (shortcuts);
   [super dealloc];
 }
@@ -304,6 +305,9 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
   [self buildMenu];
   activeLayout = -1;
   picker = [[KBSourcePicker alloc] initWithDelegate:self];
+  dockExtra = [[NBDockExtra alloc] initWithIdentifier:NBDockExtraInput
+                                           bundleName:@"Input"];
+  [dockExtra setTarget:self action:@selector (dockExtraChanged:)];
   [self buildWindow];
   connection = [[KBConnection alloc] initWithName:@"Keyboard" delegate:self];
   [self reload];
@@ -753,8 +757,8 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
   y += 22 + 2;
   [switching addSubview:KBHelp (NSMakeRect (KBLabelWidth + 8 + 20, y,
                                             inner - KBLabelWidth - 28, 18),
-                                @"The Input menu shows the layout in use and "
-                                @"switches to another.")];
+                                @"It shows when there are two layouts or "
+                                @"more.")];
   y += 18;
   [switching setFrameSize:NSMakeSize (inner, y)];
 
@@ -923,7 +927,6 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
       NSDictionary *domain;
       NSEnumerator *e = [KBKeyboardKeys () objectEnumerator];
       NSString *key;
-      id showMenu;
 
       domain = KBReadDomain (KBWindowServerDomain);
       while ((key = [e nextObject]) != nil)
@@ -940,8 +943,7 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
         }
       ASSIGN (launchSession, session);
       ASSIGN (launchDefaults, saved);
-      showMenu = [KBReadDomain (KBKeyboardDomain) objectForKey:KBShowInputMenu];
-      ASSIGN (launchShowMenu, showMenu != nil ? showMenu : (id)[NSNull null]);
+      launchShowsMenu = [dockExtra isShown];
     }
 
   [sourceTable reloadData];
@@ -983,7 +985,9 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
     if ([shortcut caseInsensitiveCompare:KBShortcutValues[i]] == NSOrderedSame)
       [shortcutPopup selectItemAtIndex:i];
   [shortcutPopup setEnabled:connected];
-  [showMenuSwitch setState:KBShowsInputMenu () ? NSOnState : NSOffState];
+  [showMenuSwitch setState:[dockExtra isInstalled] && [dockExtra isShown]
+                   ? NSOnState : NSOffState];
+  [showMenuSwitch setEnabled:[dockExtra isInstalled]];
 
   [rateSlider setIntValue:KBNearestStop (KBIntervals, KBCount (KBIntervals),
                                          [[self setting:KBKeyRepeatInterval]
@@ -1022,7 +1026,7 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
     if ([[sources objectForKey:key] intValue] == KBSourceSession)
       anySession = YES;
   [defaultsButton setEnabled:connected
-                  && (anySession || !KBShowsInputMenu ())];
+                  && (anySession || ![dockExtra isShown])];
   [revertButton setEnabled:connected && changed];
 }
 
@@ -1234,17 +1238,17 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
          what:@"change the switching keys"];
 }
 
+/* The Dock owns its extras: ask it (NBDockExtra). */
 - (void)toggleShowMenu:(id)sender
 {
-  BOOL on = [sender state] == NSOnState;
-
-  /* On is the default: keep only "off". */
-  KBSaveDefaults (KBKeyboardDomain,
-                  [NSDictionary dictionaryWithObject:
-                                  (on ? (id)[NSNull null]
-                                   : (id)[NSNumber numberWithBool:NO])
-                                              forKey:KBShowInputMenu]);
+  [dockExtra setShown:[sender state] == NSOnState];
   changed = YES;
+  [self updateControls];
+}
+
+/* The Dock answered, or its extras changed some other way. */
+- (void)dockExtraChanged:(NBDockExtra *)extra
+{
   [self updateControls];
 }
 
@@ -1303,9 +1307,10 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
   while ((key = [e nextObject]) != nil)
     [values setObject:[NSNull null] forKey:key];
   KBSaveDefaults (KBKeyboardDomain,
-                  [NSDictionary dictionaryWithObjectsAndKeys:
-                                  [NSNull null], KBShowInputMenu,
-                                [NSNull null], KBInputSources, nil]);
+                  [NSDictionary dictionaryWithObject:[NSNull null]
+                                              forKey:KBInputSources]);
+  if (![dockExtra isShown])
+    [dockExtra setShown:YES];
   if ([self apply:values what:@"go back to the default settings"])
     changed = YES;
   [self updateControls];
@@ -1327,9 +1332,8 @@ KBSaveDefaults (NSString *domainName, NSDictionary *values)
       return;
     }
   KBSaveDefaults (KBWindowServerDomain, launchDefaults);
-  KBSaveDefaults (KBKeyboardDomain,
-                  [NSDictionary dictionaryWithObject:launchShowMenu
-                                              forKey:KBShowInputMenu]);
+  if ([dockExtra isShown] != launchShowsMenu)
+    [dockExtra setShown:launchShowsMenu];
   [self reload];
   [self saveInputSources];
   changed = NO;

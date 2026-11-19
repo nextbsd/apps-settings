@@ -1,5 +1,0 @@
-{
-  CFBundleIdentifier = "org.nextbsd.dockextra.input";
-  CFBundleName = "Input";
-  DockExtraDefaultPosition = 5;
-}

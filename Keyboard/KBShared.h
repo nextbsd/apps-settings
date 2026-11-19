@@ -2,9 +2,11 @@
  * Copyright (C) 2026 Joseph Maloney <pkgdemonteam@gmail.com>
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * What Keyboard.app and its Input menu (Input.dockextra) share: the
- * defaults they keep, how they tell each other of a change, and a
- * layout's short name.
+ * Keyboard's defaults, how it tells others of a change, and a layout's
+ * short name. The Dock's Input menu (Input.dockextra) is the Dock's
+ * own now (apps-dock Extras/Input), with a copy of KBShortName; whether
+ * it shows is the Dock's DockExtrasHidden, set through NBDockExtra
+ * (Shared/).
  */
 
 #ifndef KB_SHARED_H
@@ -24,10 +26,9 @@
 #define KBKeyRepeatDelay	@"KeyRepeatDelay"
 #define KBKeyRepeatInterval	@"KeyRepeatInterval"
 
-/* Keyboard's own domain: whether the Input menu shows, and the input
-   sources' names for anything that wants to show them. */
+/* Keyboard's own domain: the input sources' names for anything that
+   wants to show them. */
 #define KBKeyboardDomain	@"org.nextbsd.Keyboard"
-#define KBShowInputMenu		@"ShowInputMenu"
 #define KBInputSources		@"InputSources"
 
 /* The distributed notification that a settings domain changed
@@ -51,17 +52,8 @@ KBReadDomain (NSString *name)
   return [NSDictionary dictionaryWithContentsOfFile:path];
 }
 
-/* Whether the Input menu shows in the Dock: Keyboard's ShowInputMenu,
-   on unless turned off. */
-static inline BOOL
-KBShowsInputMenu (void)
-{
-  id value = [KBReadDomain (KBKeyboardDomain) objectForKey:KBShowInputMenu];
-
-  return value == nil || [value boolValue];
-}
-
-/* What the Input menu shows for a layout: EN, ΕΛ, РУ, DE... */
+/* What the Input menu shows for a layout: EN, ΕΛ, РУ, DE... (apps-dock
+   Extras/Input has a copy, DockInputShortName; keep them in step.) */
 static inline NSString *
 KBShortName (NSString *layout, NSString *variant)
 {
