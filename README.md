@@ -47,7 +47,7 @@ root's `ntpd` runs (`org.nextbsd.ntpd`), with the server from
 `/etc/ntp.conf`. It changes them through the helper's `SetTimeZone`,
 `SetDate` and `SetNetworkTime` (right `org.nextbsd.settings.datetime`). The
 Clock tab needs no privilege: it writes the Dock clock extra's own
-defaults (`DockExtraClock*` in the Dock's domain, `DockWM`), key by key,
+defaults (`DockExtraClock*` in the Dock's domain, `Dock`), key by key,
 and posts the distributed notification `org.nextbsd.SettingsChanged`
 (userInfo `domain` and `keys`), on which the clock reads them again. The
 bundle is `DateTime.app`, since gnustep-make can't name an app with a

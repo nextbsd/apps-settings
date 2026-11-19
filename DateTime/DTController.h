@@ -16,10 +16,10 @@
  * com.apple.system.clock_set, which the Dock's clock follows.
  *
  * The Clock tab needs no privilege: its settings are the Dock clock
- * extra's own defaults (DockExtraClock* in the Dock's domain, DockWM).
+ * extra's own defaults (DockExtraClock* in the Dock's domain, Dock).
  * Date & Time writes only the keys it changes, which GNUstep merges into
  * the Dock's file key by key, and then posts the distributed
- * notification org.nextbsd.SettingsChanged (userInfo: domain DockWM,
+ * notification org.nextbsd.SettingsChanged (userInfo: domain Dock,
  * keys), the settings apps' change notification, on which the clock
  * reads them again. The clock posts the same when its own menu changes
  * them, and the tab follows.

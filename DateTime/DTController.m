@@ -38,7 +38,7 @@ static NSString *const DTServers[] = { @"pool.ntp.org", @"0.pool.ntp.org",
                                        @"time.google.com", nil };
 
 /* The Dock's clock extra and its settings (apps-dock Extras/Clock). */
-static NSString *const DTDockDomain = @"DockWM";
+static NSString *const DTDockDomain = @"Dock";
 static NSString *const DTAnalogKey = @"DockExtraClockAnalog";
 static NSString *const DT24HourKey = @"DockExtraClock24Hour";
 static NSString *const DTSecondsKey = @"DockExtraClockShowsSeconds";
