@@ -358,11 +358,28 @@ BTCompareNearby (id a, id b, void *context)
     return [device displayName];
   if ([which isEqual:@"kind"])
     return [device kind];
+  if ([which isEqual:@"battery"])
+    return [device batteryText];
   if ([which isEqual:@"status"])
     return [device statusText];
   if ([which isEqual:@"signal"])
     return [device signalText];
   return nil;
+}
+
+/* A low battery in red, as macOS shows it. */
+- (void)tableView:(NSTableView *)table
+  willDisplayCell:(id)cell
+   forTableColumn:(NSTableColumn *)column
+              row:(NSInteger)row
+{
+  NSArray *devices = table == pairedTable ? pairedDevices : nearbyDevices;
+  BOOL low = [[column identifier] isEqual:@"battery"] && row >= 0
+    && (NSUInteger) row < [devices count]
+    && [[devices objectAtIndex:row] batteryLow];
+
+  if ([cell respondsToSelector:@selector (setTextColor:)])
+    [cell setTextColor:low ? [NSColor redColor] : [NSColor controlTextColor]];
 }
 
 - (BOOL)tableView:(NSTableView *)table shouldEditTableColumn:(NSTableColumn *)c
@@ -515,15 +532,18 @@ BTCompareNearby (id a, id b, void *context)
 {
   BTFlippedView *view = AUTORELEASE ([[BTFlippedView alloc]
                                        initWithFrame:NSMakeRect (0, 0, width, 10)]);
-  CGFloat y = 0, x, kindW = 140, statusW = 170;
+  CGFloat y = 0, x, kindW = 120, batteryW = 80, statusW = 150;
 
   pairedTable = BTTable (view, NSMakeRect (0, y, width, BTTableHeight),
                          [NSArray arrayWithObjects:
                                     @"name", @"Device",
                                     [NSNumber numberWithFloat:
-                                                width - kindW - statusW - 24],
+                                                width - kindW - batteryW
+                                                - statusW - 24],
                                     @"kind", @"Kind",
                                     [NSNumber numberWithFloat:kindW],
+                                    @"battery", @"Battery",
+                                    [NSNumber numberWithFloat:batteryW],
                                     @"status", @"Status",
                                     [NSNumber numberWithFloat:statusW], nil],
                          self);
