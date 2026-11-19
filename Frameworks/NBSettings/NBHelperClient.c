@@ -119,3 +119,64 @@ NBHelperSetPMPreferences (const char *form, int source, const int32_t *values)
   NBHelperRelease (port);
   return status;
 }
+
+int
+NBHelperSetTimeZone (const char *form, const char *zone)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHZoneName z;
+  int status = NBHelperUnavailable;
+
+  if (strlen (zone) > SH_ZONE_MAX)
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  memset (z, 0, sizeof (z));
+  strlcpy (z, zone, sizeof (z));
+  if (sh_set_time_zone (port, f, z, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
+int
+NBHelperSetDate (const char *form, int64_t seconds, int microseconds)
+{
+  mach_port_t port = NBHelperPort ();
+  SHAuthForm f;
+  int status = NBHelperUnavailable;
+
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (sh_set_date (port, f, seconds, microseconds, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
+int
+NBHelperSetNetworkTime (const char *form, int enabled, const char *server)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHNTPServer s;
+  int status = NBHelperUnavailable;
+
+  if (strlen (server) > SH_NTP_SERVER_MAX)
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  memset (s, 0, sizeof (s));
+  strlcpy (s, server, sizeof (s));
+  if (sh_set_network_time (port, f, enabled ? TRUE : FALSE, s, &status)
+      != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
