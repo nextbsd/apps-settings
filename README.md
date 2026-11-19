@@ -57,7 +57,7 @@ battery, sound, input and the clock. A settings app's **Show X in Dock**
 checkbox doesn't keep a setting of its own. It asks the Dock, through
 `Shared/NBDockExtra` (built into each app that has such a checkbox):
 
-- The Dock's defaults domain `DockWM`, key `DockExtrasHidden`, lists the
+- The Dock's defaults domain `Dock`, key `DockExtrasHidden`, lists the
   hidden extras' identifiers (`org.nextbsd.dockextra.bluetooth`, `.battery`,
   `.input`, `.wifi`, `.sound`, `.clock`).
 - The app posts the distributed notification
