@@ -2,8 +2,8 @@
  * Copyright (C) 2026 Joseph Maloney <pkgdemonteam@gmail.com>
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * Displays.app: the display's "looks like" size, as macOS's Displays
- * settings.
+ * Displays.app: the displays' arrangement, sizes, refresh rates,
+ * mirroring and Night Shift, as macOS's Displays settings.
  */
 
 #import <AppKit/AppKit.h>
