@@ -171,6 +171,7 @@ DSParseTime (NSString *text)
 - (void)chooseRefresh:(id)sender;
 - (void)chooseUseAs:(id)sender;
 - (void)toggleMirror:(id)sender;
+- (void)chooseOptimizeFor:(id)sender;
 - (void)chooseNightShift:(id)sender;
 - (void)setSchedule:(NSString *)typed end:(int)end field:(id)sender;
 - (void)setScheduleFrom:(id)sender;
@@ -556,6 +557,35 @@ DSParseTime (NSString *text)
   [mirror setAction:@selector (toggleMirror:)];
   [view addSubview:mirror];
   y += 22;
+
+  /*
+   * Which display the mirrored picture is made for, as macOS's
+   * "Optimize for": it fills its panel, and the others show its shape,
+   * with bars where theirs differs. It is the main display, the one
+   * the others mirror.
+   */
+  if ([self isMirroring])
+    {
+      NSPopUpButton *optimize = AUTORELEASE ([[NSPopUpButton alloc]
+          initWithFrame:NSMakeRect (DSLabelWidth + 8, y + DSRowGap, 260, 24)
+              pullsDown:NO]);
+      NSUInteger i;
+
+      y += DSRowGap;
+      [view addSubview:DSRowLabel (y, @"Optimize for:")];
+      for (i = 0; i < [displays count]; i++)
+        {
+          DSDisplay *d = [displays objectAtIndex:i];
+
+          [optimize addItemWithTitle:[d name]];
+          [[optimize lastItem] setTag:(NSInteger) [d displayID]];
+        }
+      [optimize selectItemWithTag:(NSInteger) [[self mainDisplay] displayID]];
+      [optimize setTarget:self];
+      [optimize setAction:@selector (chooseOptimizeFor:)];
+      [view addSubview:optimize];
+      y += 24;
+    }
 
   [view setFrameSize:NSMakeSize (width, y)];
   return view;
@@ -1230,6 +1260,23 @@ DSParseTime (NSString *text)
     }
   [self report:err what:(on ? @"mirror the displays" : @"stop mirroring")];
   if (changed)
+    [self startConfirming];
+  [self reload];
+}
+
+/* Mirror for another display: WindowServer swaps it with the one the
+   others show (WS_DISPLAY_SET_MIRROR), and it becomes main. */
+- (void)chooseOptimizeFor:(id)sender
+{
+  DSDisplay *main = [self mainDisplay];
+  unsigned target = (unsigned)[[sender selectedItem] tag];
+  int err;
+
+  if (main == nil || target == [main displayID])
+    return;
+  err = [connection setMirrorOf:target forDisplay:main];
+  [self report:err what:@"change which display the picture is made for"];
+  if (err == 0)
     [self startConfirming];
   [self reload];
 }
