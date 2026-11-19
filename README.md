@@ -12,6 +12,8 @@ they move to `/System/Applications` once they have been tested on their own:
 | `Energy/`   | Energy.app     | Display off and computer sleep timers on battery and on the power adapter, wake for network access, the battery's charge and condition, the Dock's battery extra |
 | `Sound/`   | Sound.app      | Output and input devices (Bluetooth headsets included), output volume and mute, input volume and a live level meter, the alert sound, Show volume in Dock |
 | `DateTime/` | Date & Time.app | Network time and its server, the date and time by hand, the time zone, the Dock clock's format |
+| `Trackpad/` | Trackpad.app   | Tap to click, tap and drag, three-finger drag, secondary click, tracking speed, natural and momentum scrolling, scroll speed |
+| `Mouse/`    | Mouse.app      | Tracking speed, pointer acceleration, primary button, double-click speed, natural scrolling, scroll speed |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -114,6 +116,15 @@ Each extra's menu ends with "Open X Settings…", which opens the app here.
 `gmake -C Displays fake_displays=yes` builds a test copy that shows made-up
 displays when `DS_FAKE_DISPLAYS` is set to 1, 2 or 3, for trying the window
 before WindowServer lists real ones. Don't install it.
+
+Trackpad and Mouse change WindowServer's settings while it runs
+(`WS_SERVER_SETTINGS`) and save them in the user's
+`org.nextbsd.WindowServer` defaults, which the session sends again at
+login (`wsctl settings reload`). Natural scrolling and scroll speed are
+one key each, so the two apps share them. Each app says so when
+WindowServer's device list (`wsctl devices`) has no trackpad or mouse.
+Mouse's double-click speed is GNUstep's `GSDoubleClickTime` in
+`NSGlobalDomain`.
 
 The top-level `GNUmakefile` is a gnustep-make aggregate that builds every
 app listed in its `SUBPROJECTS`.
