@@ -28,7 +28,7 @@
   int _route;			/* BTRoute*, 0 none */
   BOOL _handsFree;
   BOOL _microphone;
-  int _battery;
+  int _battery;			/* percent, -1 unknown */
 }
 
 + (BTDevice *)deviceWithInfo:(const BTClientDevice *)info;
@@ -54,7 +54,13 @@
 - (BOOL)isPlaying;
 - (int)route;
 - (BOOL)hasHandsFree;
+/* Its battery, percent, while connected; -1 unknown. From
+   bt_device_battery (headsets and LE devices), else bt_hfp_status. */
 - (int)battery;
+/* "70%", "15% (low)"; "" when unknown. */
+- (NSString *)batteryText;
+/* At or under BTBatteryLow. */
+- (BOOL)batteryLow;
 
 /* "Connected", "Not Connected", ... for the list. */
 - (NSString *)statusText;

@@ -95,7 +95,7 @@ BTAppearanceKind (int appearance)
   d->_paired = info->paired != 0;
   d->_autoconnect = info->autoconnect != 0;
   d->_audio = info->audio != 0;
-  d->_battery = -1;
+  d->_battery = info->battery;
   return d;
 }
 
@@ -204,7 +204,9 @@ BTAppearanceKind (int appearance)
 {
   _handsFree = handsFree;
   _microphone = mic;
-  _battery = battery;
+  /* A bluetoothd without bt_device_battery still says it here. */
+  if (_battery < 0)
+    _battery = battery;
 }
 
 - (BOOL)isPlaying
@@ -225,6 +227,20 @@ BTAppearanceKind (int appearance)
 - (int)battery
 {
   return _battery;
+}
+
+- (NSString *)batteryText
+{
+  if (_state != BTDeviceConnected || _battery < 0)
+    return @"";
+  return [NSString stringWithFormat:[self batteryLow] ? @"%d%% (low)" : @"%d%%",
+                   _battery];
+}
+
+- (BOOL)batteryLow
+{
+  return _state == BTDeviceConnected && _battery >= 0
+    && _battery <= BTBatteryLow;
 }
 
 - (NSString *)statusText
