@@ -26,7 +26,7 @@ static NSString *const ENRight = @"org.nextbsd.settings.energy";
 static NSString *const ENReason = @"change the Energy settings";
 
 /* The Dock's battery extra and its settings (apps-dock). */
-static NSString *const ENDockDomain = @"DockWM";
+static NSString *const ENDockDomain = @"Dock";
 static NSString *const ENDockHiddenKey = @"DockExtrasHidden";
 static NSString *const ENBatteryExtra = @"org.nextbsd.dockextra.battery";
 static NSString *const ENDockSetHidden = @"org.nextbsd.Dock.SetExtraHidden";
