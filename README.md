@@ -10,6 +10,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `Displays/` | Displays.app   | Arrangement, main display, mirroring, "looks like" size, resolution, refresh rate, Night Shift |
 | `Bluetooth/` | Bluetooth.app | Bluetooth on or off, paired and nearby devices, connecting, pairing, each headset's audio |
 | `Energy/`   | Energy.app     | Display off and computer sleep timers on battery and on the power adapter, wake for network access, the battery's charge and condition, the Dock's battery extra |
+| `Sound/`   | Sound.app      | Output and input devices (Bluetooth headsets included), output volume and mute, input volume and a live level meter, the alert sound, Show volume in Dock |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -49,6 +50,31 @@ prompt, or "Allow changes?" for an administrator without a password) and
 `NBSettingsHelper` (one method per helper operation). Its MIG stubs are made
 from a copy of nextbsd-userland's `settingshelper.defs` in
 `Frameworks/NBSettings/mig`.
+
+Sound has no daemon to talk to; it reads the devices themselves
+(`Sound/SNAudio.c`, which apps-dock's sound extra carries a copy of):
+
+- **Kernel devices** (`pcmN` in `/dev/sndstat`): volume, mute and input
+  level through `/dev/mixerN`, as any user. Which one is the output
+  (`hw.snd.default_unit`) needs root, so until the settings apps'
+  privileged helper exists the list shows the output but can't change it.
+- **Bluetooth headsets:** bluetoothd runs a `virtual_oss` for each one
+  (`/dev/dsp.btN`, its control device `/dev/dsp.btN.ctl`). The name,
+  AVRCP absolute volume and hands-free microphone come from bluetoothd's
+  MIG interface (`bt_audio_entry`, `bt_audio_volume`, `bt_hfp_status`,
+  `bt_audio_route`), with the same `mig/` copy as Bluetooth/. The volume
+  is the headset's own (AVRCP), as on macOS; mute, and the volume of a
+  headset without absolute volume (in 6 dB steps), are virtual_oss's.
+  Choosing a headset under Input opens its microphone (hands-free), and
+  choosing another input closes it.
+- **A virtual_oss that doesn't answer** (its headset went away, and the
+  mixer waits in `connect(2)` for it to come back) would hang anything that
+  opens its devices, uninterruptibly. So every call to one runs in a child
+  process with a 400 ms limit, and Sound never waits on one longer.
+- **The alert sound** is `NBAlertSound` and `NBAlertVolume` in
+  `NSGlobalDomain` (the user's value, else the theme's Info.plist, else
+  Tink at 75%). Choosing one plays it. The backend's `NSBeep` doesn't play
+  it yet; that's libs-back's side.
 
 ## Show X in Dock
 
