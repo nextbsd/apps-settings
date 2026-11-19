@@ -9,7 +9,7 @@
  *
  * The mechanism (apps-dock DockExtrasSettings.h; keep the two in step):
  *
- *   - The Dock's defaults domain DockWM has DockExtrasHidden, an array
+ *   - The Dock's defaults domain Dock has DockExtrasHidden, an array
  *     of the hidden extras' CFBundleIdentifiers. An extra not in it is
  *     shown, when its hardware is there.
  *   - An app asks with the distributed notification
@@ -37,7 +37,7 @@
 #define SNDockExtraSound	@"org.nextbsd.dockextra.sound"
 
 /* The mechanism's names. */
-#define SNDockDomain			@"DockWM"
+#define SNDockDomain			@"Dock"
 #define SNDockExtrasHiddenKey		@"DockExtrasHidden"
 #define SNDockSetExtraHiddenNotification @"org.nextbsd.Dock.SetExtraHidden"
 #define SNDockExtrasChangedNotification	@"org.nextbsd.Dock.ExtrasChanged"
