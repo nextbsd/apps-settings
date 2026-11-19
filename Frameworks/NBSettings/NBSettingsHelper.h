@@ -37,4 +37,22 @@ extern NSString *const NBPMTTYSKeepAwake;	/* ttyskeepawake */
          forPowerSource:(NSString *)source
           authorization:(NBAuthorization *)auth;
 
+/* Right: org.nextbsd.settings.datetime. A zone name from
+ * /usr/share/zoneinfo ("America/Chicago"); processes hear
+ * com.apple.system.timezone. */
++ (int)setTimeZone:(NSString *)zone
+     authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.datetime. Sets the clock; processes hear
+ * com.apple.system.clock_set. */
++ (int)setDate:(NSDate *)date
+ authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.datetime. Network time (ntpd) on or off;
+ * a server (host name or address) replaces ntp.conf's, nil leaves them
+ * as they are. */
++ (int)setNetworkTime:(BOOL)enabled
+               server:(NSString *)server
+        authorization:(NBAuthorization *)auth;
+
 @end

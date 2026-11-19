@@ -38,5 +38,11 @@ int NBHelperDeauthorize (void);
 /* form: SH_AUTH_FORM_SIZE bytes; values: SH_PM_VALUES entries. */
 int NBHelperSetPMPreferences (const char *form, int source,
                               const int32_t *values);
+/* The Date & Time operations; form as above. server: "" leaves
+ * ntp.conf's servers alone. */
+int NBHelperSetTimeZone (const char *form, const char *zone);
+int NBHelperSetDate (const char *form, int64_t seconds, int microseconds);
+int NBHelperSetNetworkTime (const char *form, int enabled,
+                            const char *server);
 
 #endif

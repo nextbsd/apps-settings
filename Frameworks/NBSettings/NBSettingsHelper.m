@@ -8,6 +8,8 @@
 #include "NBHelperClient.h"
 #include "settingshelper_types.h"
 
+#include <math.h>
+
 NSString *const NBPowerSourceAC = @"AC Power";
 NSString *const NBPowerSourceBattery = @"Battery Power";
 NSString *const NBPowerSourceUPS = @"UPS Power";
@@ -59,6 +61,33 @@ NSString *const NBPMTTYSKeepAwake = @"ttyskeepawake";
   if (used != [values count])
     return NBAuthorizationInvalid;	/* a name this helper doesn't know */
   return NBHelperSetPMPreferences ([[auth externalForm] bytes], src, v);
+}
+
++ (int)setTimeZone:(NSString *)zone
+     authorization:(NBAuthorization *)auth
+{
+  if ([zone length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperSetTimeZone ([[auth externalForm] bytes], [zone UTF8String]);
+}
+
++ (int)setDate:(NSDate *)date
+ authorization:(NBAuthorization *)auth
+{
+  double t = [date timeIntervalSince1970];
+  int64_t seconds = (int64_t) floor (t);
+  int micro = (int) ((t - (double) seconds) * 1e6);
+
+  return NBHelperSetDate ([[auth externalForm] bytes], seconds,
+                          micro > 999999 ? 999999 : micro);
+}
+
++ (int)setNetworkTime:(BOOL)enabled
+               server:(NSString *)server
+        authorization:(NBAuthorization *)auth
+{
+  return NBHelperSetNetworkTime ([[auth externalForm] bytes], enabled ? 1 : 0,
+                                 server != nil ? [server UTF8String] : "");
 }
 
 @end

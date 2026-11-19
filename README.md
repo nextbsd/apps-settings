@@ -11,6 +11,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `Bluetooth/` | Bluetooth.app | Bluetooth on or off, paired and nearby devices, connecting, pairing, each headset's audio |
 | `Energy/`   | Energy.app     | Display off and computer sleep timers on battery and on the power adapter, wake for network access, the battery's charge and condition, the Dock's battery extra |
 | `Sound/`   | Sound.app      | Output and input devices (Bluetooth headsets included), output volume and mute, input volume and a live level meter, the alert sound, Show volume in Dock |
+| `DateTime/` | Date & Time.app | Network time and its server, the date and time by hand, the time zone, the Dock clock's format |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -38,6 +39,19 @@ settings through the privileged helper, `org.nextbsd.SettingsHelper`
 whose root domain says it can't sleep (`IOSleepSupported`), the sleep timers
 show but are disabled. "Show battery in Dock" asks the Dock with
 `org.nextbsd.Dock.SetExtraHidden`.
+
+Date & Time reads the time zone from `/var/db/zoneinfo` (what tzsetup and
+the helper record), lists the zones from `/usr/share/zoneinfo`'s
+`zone.tab` and `iso3166.tab`, and takes network time to be on while
+root's `ntpd` runs (`org.nextbsd.ntpd`), with the server from
+`/etc/ntp.conf`. It changes them through the helper's `SetTimeZone`,
+`SetDate` and `SetNetworkTime` (right `org.nextbsd.settings.datetime`). The
+Clock tab needs no privilege: it writes the Dock clock extra's own
+defaults (`DockExtraClock*` in the Dock's domain, `DockWM`), key by key,
+and posts the distributed notification `org.nextbsd.SettingsChanged`
+(userInfo `domain` and `keys`), on which the clock reads them again. The
+bundle is `DateTime.app`, since gnustep-make can't name an app with a
+space or `&`; it calls itself "Date & Time".
 
 `Frameworks/NBSettings` is what the apps share, compiled into each app that
 lists it as a gnustep-make subproject (`xxx_SUBPROJECTS =
