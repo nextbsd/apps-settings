@@ -27,6 +27,9 @@ in which a made-up device asks to pair when `BT_FAKE_PAIRING` is set to 1 to
 5 (just works, numeric comparison, passkey entry, passkey display, PIN).
 Don't install it.
 
+Its **Show Bluetooth in Dock** checkbox turns the Dock's Bluetooth extra on
+and off.
+
 Energy reads powerd's Energy Saver settings (`IOPMCopyPMPreferences`) and the
 battery (IOPowerSources) through libIOKit as the user, and changes the
 settings through the privileged helper, `org.nextbsd.SettingsHelper`
@@ -46,6 +49,27 @@ prompt, or "Allow changes?" for an administrator without a password) and
 `NBSettingsHelper` (one method per helper operation). Its MIG stubs are made
 from a copy of nextbsd-userland's `settingshelper.defs` in
 `Frameworks/NBSettings/mig`.
+
+## Show X in Dock
+
+The Dock (nextbsd/apps-dock) owns its status extras: Wi-Fi, Bluetooth,
+battery, sound, input and the clock. A settings app's **Show X in Dock**
+checkbox doesn't keep a setting of its own. It asks the Dock, through
+`Shared/NBDockExtra` (built into each app that has such a checkbox):
+
+- The Dock's defaults domain `Dock`, key `DockExtrasHidden`, lists the
+  hidden extras' identifiers (`org.nextbsd.dockextra.bluetooth`, `.battery`,
+  `.input`, `.wifi`, `.sound`, `.clock`).
+- The app posts the distributed notification
+  `org.nextbsd.Dock.SetExtraHidden` {`identifier`, `hidden`}. The Dock shows or
+  hides the extra at once and answers `org.nextbsd.Dock.ExtrasChanged`
+  {`hidden`}, which it also posts when the list changes some other way.
+  Every checkbox follows that.
+- With no Dock running (no answer within 2 seconds), the app writes
+  `DockExtrasHidden` itself; the Dock reads it when it starts.
+
+apps-dock's `DockExtrasSettings.h` has the same names; keep the two in step.
+Each extra's menu ends with "Open X Settings…", which opens the app here.
 
 `gmake -C Displays fake_displays=yes` builds a test copy that shows made-up
 displays when `DS_FAKE_DISPLAYS` is set to 1, 2 or 3, for trying the window

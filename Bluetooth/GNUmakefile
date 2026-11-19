@@ -22,8 +22,13 @@ endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
 APP_NAME = Bluetooth
-Bluetooth_OBJC_FILES = main.m BTController.m BTDevice.m BTPairingPanel.m
+Bluetooth_OBJC_FILES = main.m BTController.m BTDevice.m BTPairingPanel.m \
+	NBDockExtra.m
 Bluetooth_HEADER_FILES = BTController.h BTDevice.h BTPairingPanel.h BTClient.h
+# Shared/: the "Show Bluetooth in Dock" checkbox's side of the Dock's
+# extras (NBDockExtra).
+Bluetooth_INCLUDE_DIRS = -I../Shared
+vpath NBDockExtra.m ../Shared
 Bluetooth_RESOURCE_FILES = Resources/Bluetooth.png
 Bluetooth_APPLICATION_ICON = Bluetooth.png
 Bluetooth_OBJCFLAGS = -Wall -Wextra -Wno-unused-parameter

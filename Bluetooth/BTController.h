@@ -7,7 +7,8 @@
  *   - Bluetooth on or off, and the controller's name. While the window
  *     is open the computer is discoverable (a timed discoverable that
  *     bluetoothd ends by itself, so a persisted setting is never
- *     touched);
+ *     touched); and Show Bluetooth in Dock, the Dock's Bluetooth
+ *     extra (NBDockExtra);
  *   - My Devices: the paired devices, what each is and whether it's
  *     connected, with Connect, Disconnect and Remove; Connect
  *     automatically; and for a headset whether it plays audio and
@@ -23,6 +24,7 @@
 #import <AppKit/AppKit.h>
 #import "BTClient.h"
 #import "BTPairingPanel.h"
+#import "NBDockExtra.h"
 
 @interface BTController : NSObject <BTPairingPanelDelegate>
 {
@@ -52,6 +54,8 @@
   NSTextField *powerTitle;
   NSTextField *powerDetail;
   NSButton *powerButton;
+  NSButton *dockSwitch;		/* Show Bluetooth in Dock */
+  NBDockExtra *dockExtra;
   NSTableView *pairedTable;
   NSTextField *deviceDetail;
   NSButton *connectButton;

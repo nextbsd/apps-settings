@@ -226,6 +226,8 @@ BTCompareNearby (id a, id b, void *context)
 - (BTDevice *)deviceWithAddress:(NSString *)address;
 - (BOOL)report:(int)st what:(NSString *)what;
 - (void)togglePower:(id)sender;
+- (void)toggleDockExtra:(id)sender;
+- (void)dockExtraChanged:(NBDockExtra *)extra;
 - (void)connectDevice:(id)sender;
 - (void)disconnectDevice:(id)sender;
 - (void)removeDevice:(id)sender;
@@ -253,6 +255,8 @@ BTCompareNearby (id a, id b, void *context)
   RELEASE (shownPaired);
   RELEASE (shownNearby);
   RELEASE (dismissedPrompts);
+  [dockExtra invalidate];
+  RELEASE (dockExtra);
   [super dealloc];
 }
 
@@ -297,6 +301,9 @@ BTCompareNearby (id a, id b, void *context)
   else
     NSLog (@"Bluetooth: no pipe for notifications: %s", strerror (errno));
   client = BTClientOpen (wakeFDs[1]);
+  dockExtra = [[NBDockExtra alloc] initWithIdentifier:NBDockExtraBluetooth
+                                           bundleName:@"Bluetooth"];
+  [dockExtra setTarget:self action:@selector (dockExtraChanged:)];
   pairingPanel = [[BTPairingPanel alloc] initWithClient:client delegate:self];
 
   [self buildWindow];
@@ -525,6 +532,14 @@ BTCompareNearby (id a, id b, void *context)
                           @"Turn Bluetooth Off", self,
                           @selector (togglePower:));
   [view addSubview:powerButton];
+
+  /* As macOS's "Show Bluetooth in menu bar". */
+  dockSwitch = BTSwitch (NSMakeRect (textX, BTIconSize + 6, textW, 22),
+                         @"Show Bluetooth in Dock", self,
+                         @selector (toggleDockExtra:));
+  [view addSubview:dockSwitch];
+  [view setFrameSize:NSMakeSize (width, BTIconSize + 6 + 22)];
+  [self dockExtraChanged:dockExtra];
   return view;
 }
 
@@ -1074,6 +1089,23 @@ BTCompareNearby (id a, id b, void *context)
   else
     [self report:BTClientSetPower (client, 1) what:@"turn Bluetooth on"];
   [self reload];
+}
+
+- (void)toggleDockExtra:(id)sender
+{
+  [dockExtra setShown:[dockSwitch state] == NSOnState];
+}
+
+/* The Dock answered, or its extras changed some other way. */
+- (void)dockExtraChanged:(NBDockExtra *)extra
+{
+  BOOL installed = [dockExtra isInstalled];
+
+  [dockSwitch setState:installed && [dockExtra isShown]
+              ? NSOnState : NSOffState];
+  [dockSwitch setEnabled:installed];
+  [dockSwitch setToolTip:installed ? nil
+              : @"The Dock's Bluetooth extra isn't installed."];
 }
 
 - (void)connectDevice:(id)sender
