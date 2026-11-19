@@ -9,6 +9,6 @@ ifeq ($(GNUSTEP_MAKEFILES),)
 endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
-SUBPROJECTS = Displays
+SUBPROJECTS = Displays Bluetooth
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
