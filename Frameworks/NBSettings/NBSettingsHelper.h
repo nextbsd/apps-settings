@@ -94,4 +94,20 @@ extern NSString *const NBPMTTYSKeepAwake;	/* ttyskeepawake */
                         powerButtons:(BOOL)powerButtons
                        authorization:(NBAuthorization *)auth;
 
+/* Right: org.nextbsd.settings.printers. CUPSAdmin: a driverless (IPP
+ * Everywhere) printer added to the local cupsd as the queue `name`, for
+ * `uri` (ipp://, ipps:// or dnssd://), not shared. info and location
+ * may be nil. It asks the printer for its capabilities, so it can take
+ * a while: don't call it on the main thread. */
++ (int)addPrinter:(NSString *)name
+              uri:(NSString *)uri
+             info:(NSString *)info
+         location:(NSString *)location
+    authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.printers. CUPSAdmin: the queue `name`
+ * removed, with its jobs. */
++ (int)removePrinter:(NSString *)name
+       authorization:(NBAuthorization *)auth;
+
 @end

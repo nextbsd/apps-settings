@@ -327,3 +327,36 @@ NBHelperSetLoginWindowOptions (const char *form, int showNameFields,
   NBHelperRelease (port);
   return status;
 }
+
+int
+NBHelperCUPSAdmin (const char *form, int op, const char *printer,
+                   const char *uri, const char *info, const char *location)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHPrinterName p;
+  SHDeviceURI u;
+  SHPrinterText i, l;
+  int status = NBHelperUnavailable;
+
+  if (strlen (printer) > SH_PRINTER_MAX || strlen (uri) > SH_DEVICE_URI_MAX
+      || strlen (info) > SH_PRINTER_TEXT_MAX
+      || strlen (location) > SH_PRINTER_TEXT_MAX)
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  memset (p, 0, sizeof (p));
+  memset (u, 0, sizeof (u));
+  memset (i, 0, sizeof (i));
+  memset (l, 0, sizeof (l));
+  strlcpy (p, printer, sizeof (p));
+  strlcpy (u, uri, sizeof (u));
+  strlcpy (i, info, sizeof (i));
+  strlcpy (l, location, sizeof (l));
+  if (sh_cups_admin (port, f, op, p, u, i, l, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}

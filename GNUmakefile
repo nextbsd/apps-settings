@@ -9,6 +9,6 @@ ifeq ($(GNUSTEP_MAKEFILES),)
 endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
-SUBPROJECTS = Displays Bluetooth Energy Keyboard Sound DateTime Trackpad Mouse UsersLogin
+SUBPROJECTS = Displays Bluetooth Energy Keyboard Sound DateTime Trackpad Mouse UsersLogin Printers
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make

@@ -15,6 +15,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `Trackpad/` | Trackpad.app   | Tap to click, tap and drag, three-finger drag, secondary click, tracking speed, natural and momentum scrolling, scroll speed |
 | `Mouse/`    | Mouse.app      | Tracking speed, pointer acceleration, primary button, double-click speed, natural scrolling, scroll speed |
 | `UsersLogin/` | Users & Login.app | The local accounts (add, delete, passwords, administrators), automatic login, the login window's list or name and password fields, its Restart and Shut Down buttons |
+| `Printers/` | Printers.app   | The printers with their status and waiting jobs, adding nearby driverless printers or one by address, removing them, the default printer, paper size and two-sided printing |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -115,6 +116,20 @@ the only account, `admin`, without a password; empty: off), `SHOWFULLNAME`,
 can log in automatically; it never stands in for one. They apply at the next
 login window, once autologin-user and loginwindow read them. It's built as
 `UsersLogin.app` and installed as `Users & Login.app`, as Date & Time is.
+
+Printers talks to the local cupsd (`org.nextbsd.cupsd`, from
+nextbsd-printing-support) through libcups, as the user: the queues and
+their jobs (`cupsEnumDests`, `cupsGetJobs2`), the driverless (IPP
+Everywhere) printers nearby that libcups finds through mDNSResponder, and
+what a printer offers for paper size and two-sided printing
+(`cupsCopyDestInfo`). The default printer, paper size and two-sided are
+the user's own, in `~/.cups/lpoptions` (`cupsSetDests2`, as `lpoptions`
+does), and need no privilege. Adding and removing a printer go through
+the helper's `CUPSAdmin` (right `org.nextbsd.settings.printers`,
+`is-admin`), which runs `lpadmin -m everywhere` as root; only driverless
+printers can be added until nextbsd-printing-support has filters and
+drivers. Printing is optional, so Printers.app is meant to ship with that
+package rather than the desktop's core.
 
 ## Show X in Dock
 

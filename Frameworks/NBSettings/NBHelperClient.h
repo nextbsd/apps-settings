@@ -56,5 +56,10 @@ int NBHelperSetAdmin (const char *form, const char *user, int admin);
 int NBHelperSetAutoLogin (const char *form, const char *user);
 int NBHelperSetLoginWindowOptions (const char *form, int showNameFields,
                                    int showPowerButtons);
+/* CUPSAdmin: op is SH_CUPS_ADD or SH_CUPS_DELETE; uri, info and
+ * location are "" for a delete. */
+int NBHelperCUPSAdmin (const char *form, int op, const char *printer,
+                       const char *uri, const char *info,
+                       const char *location);
 
 #endif
