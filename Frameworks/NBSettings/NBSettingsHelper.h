@@ -55,6 +55,45 @@ extern NSString *const NBPMTTYSKeepAwake;	/* ttyskeepawake */
                server:(NSString *)server
         authorization:(NBAuthorization *)auth;
 
+/* Right: org.nextbsd.settings.users. A new local account: short name,
+ * full name, a password ("" or nil for none), an administrator or not. */
++ (int)createUser:(NSString *)user
+         fullName:(NSString *)fullName
+         password:(NSString *)password
+            admin:(BOOL)admin
+    authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.users. Removes the account, and its home
+ * in /Local/Users unless keepHome. */
++ (int)deleteUser:(NSString *)user
+         keepHome:(BOOL)keepHome
+    authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.users, or for the console user's own
+ * account org.nextbsd.settings.users.own-password, proved first with
+ * -authorizeUser:password: and the old password. "" or nil: no
+ * password. */
++ (int)setPassword:(NSString *)password
+           forUser:(NSString *)user
+     authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.users. In group admin or not. */
++ (int)setAdmin:(BOOL)admin
+        forUser:(NSString *)user
+  authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.users. The account (one without a
+ * password) logged in at startup; nil turns automatic login off. */
++ (int)setAutoLoginUser:(NSString *)user
+          authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.users. The login window asks for a name
+ * and password, or lists the users; it shows Restart and Shut Down, or
+ * not. */
++ (int)setLoginWindowShowsNameFields:(BOOL)nameFields
+                        powerButtons:(BOOL)powerButtons
+                       authorization:(NBAuthorization *)auth;
+
 /* Right: org.nextbsd.settings.printers. CUPSAdmin: a driverless (IPP
  * Everywhere) printer added to the local cupsd as the queue `name`, for
  * `uri` (ipp://, ipps:// or dnssd://), not shared. info and location

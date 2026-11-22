@@ -44,6 +44,18 @@ int NBHelperSetTimeZone (const char *form, const char *zone);
 int NBHelperSetDate (const char *form, int64_t seconds, int microseconds);
 int NBHelperSetNetworkTime (const char *form, int enabled,
                             const char *server);
+/* The Users & Login operations; form as above. password: "" for none;
+ * user: "" turns automatic login off. */
+int NBHelperCreateUser (const char *form, const char *user,
+                        const char *fullName, const char *password,
+                        int admin);
+int NBHelperDeleteUser (const char *form, const char *user, int keepHome);
+int NBHelperSetPassword (const char *form, const char *user,
+                         const char *password);
+int NBHelperSetAdmin (const char *form, const char *user, int admin);
+int NBHelperSetAutoLogin (const char *form, const char *user);
+int NBHelperSetLoginWindowOptions (const char *form, int showNameFields,
+                                   int showPowerButtons);
 /* CUPSAdmin: op is SH_CUPS_ADD or SH_CUPS_DELETE; uri, info and
  * location are "" for a delete. */
 int NBHelperCUPSAdmin (const char *form, int op, const char *printer,

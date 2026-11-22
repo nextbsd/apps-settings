@@ -181,6 +181,153 @@ NBHelperSetNetworkTime (const char *form, int enabled, const char *server)
   return status;
 }
 
+/* Copy a string into a fixed-size wire field; false if it doesn't fit. */
+static int
+NBHelperCopy (char *field, size_t size, const char *s)
+{
+  memset (field, 0, size);
+  return strlcpy (field, s, size) < size;
+}
+
+int
+NBHelperCreateUser (const char *form, const char *user, const char *fullName,
+                    const char *password, int admin)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHUserName u;
+  SHFullName n;
+  SHPassword p;
+  int status = NBHelperUnavailable;
+
+  if (!NBHelperCopy (u, sizeof (u), user)
+      || !NBHelperCopy (n, sizeof (n), fullName)
+      || !NBHelperCopy (p, sizeof (p), password))
+    {
+      explicit_bzero (p, sizeof (p));
+      return SH_ERR_INVALID;
+    }
+  port = NBHelperPort ();
+  if (port != MACH_PORT_NULL)
+    {
+      memcpy (f, form, sizeof (f));
+      if (sh_create_user (port, f, u, n, p, admin ? TRUE : FALSE, &status)
+          != KERN_SUCCESS)
+        status = NBHelperUnavailable;
+      NBHelperRelease (port);
+    }
+  explicit_bzero (p, sizeof (p));
+  return status;
+}
+
+int
+NBHelperDeleteUser (const char *form, const char *user, int keepHome)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHUserName u;
+  int status = NBHelperUnavailable;
+
+  if (!NBHelperCopy (u, sizeof (u), user))
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (sh_delete_user (port, f, u, keepHome ? TRUE : FALSE, &status)
+      != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
+int
+NBHelperSetPassword (const char *form, const char *user, const char *password)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHUserName u;
+  SHPassword p;
+  int status = NBHelperUnavailable;
+
+  if (!NBHelperCopy (u, sizeof (u), user)
+      || !NBHelperCopy (p, sizeof (p), password))
+    {
+      explicit_bzero (p, sizeof (p));
+      return SH_ERR_INVALID;
+    }
+  port = NBHelperPort ();
+  if (port != MACH_PORT_NULL)
+    {
+      memcpy (f, form, sizeof (f));
+      if (sh_set_password (port, f, u, p, &status) != KERN_SUCCESS)
+        status = NBHelperUnavailable;
+      NBHelperRelease (port);
+    }
+  explicit_bzero (p, sizeof (p));
+  return status;
+}
+
+int
+NBHelperSetAdmin (const char *form, const char *user, int admin)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHUserName u;
+  int status = NBHelperUnavailable;
+
+  if (!NBHelperCopy (u, sizeof (u), user))
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (sh_set_admin (port, f, u, admin ? TRUE : FALSE, &status)
+      != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
+int
+NBHelperSetAutoLogin (const char *form, const char *user)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHUserName u;
+  int status = NBHelperUnavailable;
+
+  if (!NBHelperCopy (u, sizeof (u), user))
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (sh_set_auto_login (port, f, u, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
+int
+NBHelperSetLoginWindowOptions (const char *form, int showNameFields,
+                               int showPowerButtons)
+{
+  mach_port_t port = NBHelperPort ();
+  SHAuthForm f;
+  int status = NBHelperUnavailable;
+
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (sh_set_login_window_options (port, f, showNameFields ? TRUE : FALSE,
+                                   showPowerButtons ? TRUE : FALSE, &status)
+      != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
 int
 NBHelperCUPSAdmin (const char *form, int op, const char *printer,
                    const char *uri, const char *info, const char *location)
