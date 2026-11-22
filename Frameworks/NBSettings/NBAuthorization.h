@@ -49,6 +49,7 @@ enum
   NBAuthorizationExists = 10,
   NBAuthorizationLastAdmin = 11,
   NBAuthorizationLoggedIn = 12,
+  NBAuthorizationBusy = 13,
   NBAuthorizationUnavailable = 100
 };
 

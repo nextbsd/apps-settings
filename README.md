@@ -72,6 +72,16 @@ prompt, or "Allow changes?" for an administrator without a password) and
 from a copy of nextbsd-userland's `settingshelper.defs` in
 `Frameworks/NBSettings/mig`.
 
+`NBSettingsHelper` also carries Update.app's calls
+([nextbsd/apps-update](https://github.com/nextbsd/apps-update)), which
+compiles NBSettings in from a checkout of this repository beside its own:
+`+checkForUpdateWithAuthorization:`, `+downloadUpdateWithAuthorization:`,
+`+installUpdateWithAuthorization:`, `+cancelUpdateWithAuthorization:`,
+`+restartForUpdateWithAuthorization:` and `+updateStatus:authorization:`
+(rights `org.nextbsd.settings.update.check` and, to install,
+`org.nextbsd.settings.update`). Each job runs in the helper; the status
+says how far it has got.
+
 Sound has no daemon to talk to; it reads the devices themselves
 (`Sound/SNAudio.c`, which apps-dock's sound extra carries a copy of):
 

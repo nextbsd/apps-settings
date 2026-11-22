@@ -59,6 +59,43 @@ enum
   NBNetIPv6Off = 3
 };
 
+/* Update's status (+updateStatus:authorization:), and its values,
+ * settingshelper_types.h's SH_UPDATE_*. */
+extern NSString *const NBUpdateJob;		/* NSNumber, NBUpdateJob* */
+extern NSString *const NBUpdateState;		/* NSNumber, NBUpdateState* */
+extern NSString *const NBUpdatePending;	/* NSNumber, BOOL: an update */
+extern NSString *const NBUpdateAvailableVersion; /* its version; "": not
+                                                    known */
+extern NSString *const NBUpdateSize;		/* NSNumber, bytes */
+extern NSString *const NBUpdateDone;		/* NSNumber */
+extern NSString *const NBUpdateTotal;		/* NSNumber */
+extern NSString *const NBUpdateLine;		/* what the job is doing */
+extern NSString *const NBUpdateChanged;		/* NSNumber, BOOL */
+extern NSString *const NBUpdateRestart;		/* NSNumber, NBUpdateRestart* */
+extern NSString *const NBUpdateRestartVersion;	/* what it installed */
+
+enum
+{
+  NBUpdateJobNone = 0,
+  NBUpdateJobCheck = 1,
+  NBUpdateJobDownload = 2,
+  NBUpdateJobInstall = 3
+};
+enum
+{
+  NBUpdateStateIdle = 0,
+  NBUpdateStateRunning = 1,
+  NBUpdateStateDone = 2,
+  NBUpdateStateFailed = 3,
+  NBUpdateStateCancelled = 4
+};
+enum
+{
+  NBUpdateRestartNone = 0,
+  NBUpdateRestartPending = 1,
+  NBUpdateRestartDone = 2
+};
+
 @interface NBSettingsHelper : NSObject
 
 /* Right: org.nextbsd.settings.energy. Settings not in `values` stay as
@@ -159,5 +196,22 @@ enum
  * login. */
 + (int)setSystemLocale:(NSString *)locale
          authorization:(NBAuthorization *)auth;
+
+/* Update.app's operations. NextBSD is updated as a whole from its pkg
+ * repository; check, download and install each start a job in the
+ * helper and return at once (NBAuthorizationBusy while another runs),
+ * and +updateStatus: follows it: the running job, or the last one, as a
+ * dictionary of the NBUpdate* keys. Right org.nextbsd.settings.update
+ * for the install, org.nextbsd.settings.update.check for the rest. */
++ (int)updateStatus:(NSDictionary **)status
+      authorization:(NBAuthorization *)auth;
++ (int)checkForUpdateWithAuthorization:(NBAuthorization *)auth;
++ (int)downloadUpdateWithAuthorization:(NBAuthorization *)auth;
++ (int)installUpdateWithAuthorization:(NBAuthorization *)auth;
+/* Stops a check or a download; an install can't be stopped. */
++ (int)cancelUpdateWithAuthorization:(NBAuthorization *)auth;
+/* Restarts the computer, only while an installed update waits for it
+ * (NBUpdateRestartPending). */
++ (int)restartForUpdateWithAuthorization:(NBAuthorization *)auth;
 
 @end
