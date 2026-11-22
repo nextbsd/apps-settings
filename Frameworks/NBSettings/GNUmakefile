@@ -26,8 +26,9 @@ include $(GNUSTEP_MAKEFILES)/common.make
 SUBPROJECT_NAME = NBSettings
 NBSettings_OBJC_FILES = NBAuthorization.m NBAuthorizationPanel.m \
 	NBSettingsHelper.m
-NBSettings_HEADER_FILES = NBAuthorization.h NBAuthorizationPanel.h \
-	NBSettingsHelper.h NBHelperClient.h
+# No NBSettings_HEADER_FILES: a subproject installs its headers in the
+# Library's Headers/NBSettings with the app, and these are only for the
+# apps compiled with it, which find them with -I.
 NBSettings_OBJCFLAGS = -Wall -Wextra -Wno-unused-parameter -Imig
 
 # NBHelperClient.c and the MIG stub are plain C on Mach, compiled apart

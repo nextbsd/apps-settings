@@ -38,10 +38,5 @@ DateTime_GUI_LIBS += -llaunch -lsystem_kernel
 include $(GNUSTEP_MAKEFILES)/application.make
 
 # Installed under its real name, replacing an earlier install of either.
-INSTALLED_APPS = $(DESTDIR)$(GNUSTEP_APPS)
-after-install::
-	rm -rf "$(INSTALLED_APPS)/Date & Time.app"
-	mv "$(INSTALLED_APPS)/DateTime.app" "$(INSTALLED_APPS)/Date & Time.app"
-
-after-uninstall::
-	rm -rf "$(INSTALLED_APPS)/Date & Time.app"
+INSTALL_NAME = Date & Time
+include ../Shared/InstallName.make

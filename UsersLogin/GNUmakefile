@@ -37,10 +37,5 @@ UsersLogin_GUI_LIBS += -llaunch -lsystem_kernel
 include $(GNUSTEP_MAKEFILES)/application.make
 
 # Installed under its real name, replacing an earlier install of either.
-INSTALLED_APPS = $(DESTDIR)$(GNUSTEP_APPS)
-after-install::
-	rm -rf "$(INSTALLED_APPS)/Users & Login.app"
-	mv "$(INSTALLED_APPS)/UsersLogin.app" "$(INSTALLED_APPS)/Users & Login.app"
-
-after-uninstall::
-	rm -rf "$(INSTALLED_APPS)/Users & Login.app"
+INSTALL_NAME = Users & Login
+include ../Shared/InstallName.make
