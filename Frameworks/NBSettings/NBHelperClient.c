@@ -426,3 +426,25 @@ NBHelperSetComputerName (const char *form, const char *computerName,
   NBHelperRelease (port);
   return status;
 }
+
+int
+NBHelperSetSystemLocale (const char *form, const char *locale)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHLocaleName l;
+  int status = NBHelperUnavailable;
+
+  if (strlen (locale) > SH_LOCALE_MAX)
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  memset (l, 0, sizeof (l));
+  strlcpy (l, locale, sizeof (l));
+  if (sh_set_system_locale (port, f, l, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}

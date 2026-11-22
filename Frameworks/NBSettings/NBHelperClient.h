@@ -81,5 +81,8 @@ int NBHelperCommitNetworkPreferences (const char *form,
                                       const NBHelperNetworkService *service);
 int NBHelperSetComputerName (const char *form, const char *computerName,
                              const char *localHostName);
+/* Language & Region's operation; form as above. locale: a name from
+ * /usr/share/locale ("de_DE.UTF-8"). */
+int NBHelperSetSystemLocale (const char *form, const char *locale);
 
 #endif

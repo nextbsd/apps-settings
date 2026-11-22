@@ -17,6 +17,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `UsersLogin/` | Users & Login.app | The local accounts (add, delete, passwords, administrators), automatic login, the login window's list or name and password fields, its Restart and Shut Down buttons |
 | `Printers/` | Printers.app   | The printers with their status and waiting jobs, adding nearby driverless printers or one by address, removing them, the default printer, paper size and two-sided printing |
 | `Network/`  | Network.app    | The network services and their status, IPv4, IPv6, DNS servers and search domains, the hardware address, Wi-Fi networks and joining them (WPA Personal and Enterprise), the computer's name, the Dock's Wi-Fi extra |
+| `LanguageRegion/` | Language & Region.app | Preferred languages, the region and its formats (first day of the week, calendar, 24-hour time, measurement units, temperature) with a preview, the terminal's locale, the system's language |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -182,6 +183,22 @@ one key each, so the two apps share them. Each app says so when
 WindowServer's device list (`wsctl devices`) has no trackpad or mouse.
 Mouse's double-click speed is GNUstep's `GSDoubleClickTime` in
 `NSGlobalDomain`.
+
+Language & Region writes the two `NSGlobalDomain` keys libs-base reads:
+`NSLanguages`, the preferred languages in order ("de", "en"), and
+`Locale`, the formats: the first language in the region ("de_GB"), with
+ICU's Unicode keywords for what differs from the region's own
+(`calendar=`, `fw=`, `hours=`, `ms=`, `mu=`; `LanguageRegion/LRLocales.h`
+says which libs-base honors). Then it posts `org.nextbsd.SettingsChanged`.
+Running apps mostly keep their language and formats until they're
+reopened, and the window says so. For the terminal and command-line
+programs it writes `lang`, `charset` and `LC_TIME`, `LC_NUMERIC` and
+`LC_MONETARY` (when the region's differ) to the user's `~/.login_conf`,
+which `setusercontext(3)` applies at the next login, from loginwindow as
+from login(1) and sshd. The system's language, the default login class's
+`lang` in `/etc/login.conf`, goes through the helper's `SetSystemLocale`
+(right `org.nextbsd.settings.locale`). It's built as `LanguageRegion.app`
+and installed as `Language & Region.app`.
 
 The top-level `GNUmakefile` is a gnustep-make aggregate that builds every
 app listed in its `SUBPROJECTS`.
