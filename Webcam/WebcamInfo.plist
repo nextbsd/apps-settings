@@ -1,0 +1,18 @@
+{
+  ApplicationName = Webcam;
+  ApplicationDescription = "Photos and videos from the camera";
+  ApplicationRelease = "27.0";
+  Authors = ("Joseph Maloney <pkgdemonteam@gmail.com>");
+  URL = "License: BSD 2-Clause";
+  Copyright = "Copyright (C) 2026 Joseph Maloney";
+  NSHumanReadableCopyright = "Copyright (C) 2026 Joseph Maloney";
+  NSPrincipalClass = NSApplication;
+  NSIcon = "Webcam.png";
+  CFBundleIconFile = "Webcam.png";
+  NSExecutable = Webcam;
+  CFBundleIdentifier = "org.nextbsd.Webcam";
+  CFBundleName = Webcam;
+  CFBundleDisplayName = Webcam;
+  CFBundleShortVersionString = "27.0";
+  CFBundleVersion = "27.0";
+}
