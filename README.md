@@ -18,6 +18,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `Printers/` | Printers.app   | The printers with their status and waiting jobs, adding nearby driverless printers or one by address, removing them, the default printer, paper size and two-sided printing |
 | `Network/`  | Network.app    | The network services and their status, IPv4, IPv6, DNS servers and search domains, the hardware address, Wi-Fi networks and joining them (WPA Personal and Enterprise), the computer's name, the Dock's Wi-Fi extra |
 | `LanguageRegion/` | Language & Region.app | Preferred languages, the region and its formats (first day of the week, calendar, 24-hour time, measurement units, temperature) with a preview, the terminal's locale, the system's language |
+| `Webcam/`   | Webcam.app     | The camera's live view, photos with a countdown and flash, video recordings, recent captures, the camera to use |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -149,6 +150,19 @@ Wi-Fi extra does. Turning Wi-Fi on and off, and the known networks, wait
 for wland calls that don't exist yet. Its **Show Wi-Fi status in Dock**
 checkbox turns the Dock's Wi-Fi extra on and off, and the extra's "Open
 Network Settings…" opens it on the Wi-Fi service.
+
+Webcam shows the camera's live view, as macOS's Photo Booth: photos (with
+an optional countdown and flash) go to `~/Images` as PNG or JPEG, and video
+to `~/Videos` as Motion JPEG in AVI. It reaches cameras through `WCCapture`
+(`WCCapture.h`), a small C interface with one backend per kind of camera:
+V4L2 for USB webcams (`/dev/videoN`, as webcamd makes them through cuse),
+and a test pattern, clearly labelled, when there's no camera. The camera
+broker of nextbsd/nextbsd#658 is meant to become another backend; then
+only `WCCapture.c`'s backend table changes. NextBSD has no
+`<linux/videodev2.h>` yet (nextbsd/nextbsd#657), so `WCV4L2.h` carries the
+part of V4L2 the app uses. Base's libavcodec has no video encoders, so
+recordings are written with libjpeg (`WCRecorder.c`); their format is
+nextbsd/nextbsd#660. Recordings have no sound yet.
 
 ## Show X in Dock
 
