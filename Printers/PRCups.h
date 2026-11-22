@@ -65,6 +65,10 @@ BOOL PRCupsSetDefault (NSString *printer);
  * printer's own default (lpoptions -o, -r). */
 BOOL PRCupsSetOption (NSString *printer, NSString *option, NSString *value);
 
+/* Forget a removed printer in the user's lpoptions: its options, and the
+ * default if it was. */
+BOOL PRCupsForget (NSString *printer);
+
 /* What printer offers for option: its values, in the printer's order,
  * and in *byDefault the printer's own default. nil: nothing to offer. */
 NSArray *PRCupsChoices (NSString *printer, NSString *option,

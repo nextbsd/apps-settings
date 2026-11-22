@@ -244,6 +244,32 @@ PRCupsSetOption (NSString *printer, NSString *option, NSString *value)
   return PRChangeDests (printer, option, value, NO);
 }
 
+/* Removing a queue from cupsd leaves the user's lpoptions naming it
+   ("Default <it>", its options); write them back without it. With no
+   queue left cupsSetDests2 refuses to write, and nothing in the file
+   names a queue that exists, so the file goes. */
+BOOL
+PRCupsForget (NSString *printer)
+{
+  cups_dest_t *dests = NULL;
+  NSString *file;
+  int n, rc;
+
+  n = cupsGetDests2 (CUPS_HTTP_DEFAULT, &dests);
+  n = cupsRemoveDest ([printer UTF8String], NULL, n, &dests);
+  if (n > 0)
+    {
+      rc = cupsSetDests2 (CUPS_HTTP_DEFAULT, n, dests);
+      cupsFreeDests (n, dests);
+      return rc == 0;
+    }
+  cupsFreeDests (n, dests);
+  file = [NSHomeDirectory () stringByAppendingPathComponent:
+                                @".cups/lpoptions"];
+  return ![[NSFileManager defaultManager] fileExistsAtPath:file]
+    || [[NSFileManager defaultManager] removeFileAtPath:file handler:nil];
+}
+
 NSArray *
 PRCupsChoices (NSString *printer, NSString *option, NSString **byDefault)
 {

@@ -861,6 +861,8 @@ PRJobStateText (int state)
         PRCupsSetDefault (name);
       ASSIGN (selectedName, name);
     }
+  else if (status == NBAuthorizationOK)
+    PRCupsForget ([op objectForKey:PRName]);
   DESTROY (shownState);
   [self reload];
 }
