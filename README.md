@@ -14,6 +14,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `DateTime/` | Date & Time.app | Network time and its server, the date and time by hand, the time zone, the Dock clock's format |
 | `Trackpad/` | Trackpad.app   | Tap to click, tap and drag, three-finger drag, secondary click, tracking speed, natural and momentum scrolling, scroll speed |
 | `Mouse/`    | Mouse.app      | Tracking speed, pointer acceleration, primary button, double-click speed, natural scrolling, scroll speed |
+| `Network/`  | Network.app    | The network services and their status, IPv4, IPv6, DNS servers and search domains, the hardware address, Wi-Fi networks and joining them (WPA Personal and Enterprise), the computer's name, the Dock's Wi-Fi extra |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -91,6 +92,23 @@ Sound has no daemon to talk to; it reads the devices themselves
   `NSGlobalDomain` (the user's value, else the theme's Info.plist, else
   Tink at 75%). Choosing one plays it. The backend's `NSBeep` doesn't play
   it yet; that's libs-back's side.
+
+Network reads the network services as the user from configd: their
+settings from SCPreferences (`preferences.plist`) and what they have now
+from the dynamic store (`State:/Network/...`), with the names hostnamed
+publishes. As on macOS, changes wait for Apply, which sends each changed
+service to the helper's `CommitNetworkPreferences` (its IPv4, IPv6 and
+DNS settings, which the helper writes, commits and applies, so ipconfigd
+configures the service again) and the names to `SetComputerName` (right
+`org.nextbsd.settings.network`). Wi-Fi needs no privilege: Network scans
+and joins through wland's MIG interface (`org.nextbsd.wlan`), with the
+build making the client stubs from a copy of nextbsd-userland's
+`src/WLAN/wlan.defs` (in `Network/mig`), and reads the joined network
+from wland's `State:/Network/Interface/<if>/AirPort` entry, as the Dock's
+Wi-Fi extra does. Turning Wi-Fi on and off, and the known networks, wait
+for wland calls that don't exist yet. Its **Show Wi-Fi status in Dock**
+checkbox turns the Dock's Wi-Fi extra on and off, and the extra's "Open
+Network Settings…" opens it on the Wi-Fi service.
 
 ## Show X in Dock
 

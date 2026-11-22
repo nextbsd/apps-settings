@@ -29,6 +29,36 @@ extern NSString *const NBPMReduceBrightness;	/* lessbright */
 extern NSString *const NBPMTTYSKeepAwake;	/* ttyskeepawake */
 #define NBPMDefault (-2)
 
+/* CommitNetworkPreferences' settings, for one service. Strings are
+ * addresses as text; the lists are NSArrays of NSStrings, empty for
+ * what DHCP gives. Keys left out are empty. */
+extern NSString *const NBNetIPv4Method;		/* NSNumber, NBNetIPv4* */
+extern NSString *const NBNetIPv4Address;
+extern NSString *const NBNetIPv4SubnetMask;
+extern NSString *const NBNetIPv4Router;
+extern NSString *const NBNetIPv6Method;		/* NSNumber, NBNetIPv6* */
+extern NSString *const NBNetIPv6Address;
+extern NSString *const NBNetIPv6PrefixLength;	/* NSNumber */
+extern NSString *const NBNetIPv6Router;
+extern NSString *const NBNetDNSServers;
+extern NSString *const NBNetSearchDomains;
+
+/* The methods, settingshelper_types.h's SH_NET_V4_* and SH_NET_V6_*. */
+enum
+{
+  NBNetIPv4DHCP = 0,
+  NBNetIPv4DHCPManualAddress = 1,
+  NBNetIPv4Manual = 2,
+  NBNetIPv4Off = 3
+};
+enum
+{
+  NBNetIPv6Automatic = 0,
+  NBNetIPv6Manual = 1,
+  NBNetIPv6LinkLocal = 2,
+  NBNetIPv6Off = 3
+};
+
 @interface NBSettingsHelper : NSObject
 
 /* Right: org.nextbsd.settings.energy. Settings not in `values` stay as
@@ -54,5 +84,18 @@ extern NSString *const NBPMTTYSKeepAwake;	/* ttyskeepawake */
 + (int)setNetworkTime:(BOOL)enabled
                server:(NSString *)server
         authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.network. One network service's TCP/IP and
+ * DNS settings (the NBNet* keys above), committed and applied; the
+ * service is configured again at once. */
++ (int)commitNetworkService:(NSString *)serviceID
+                   settings:(NSDictionary *)settings
+              authorization:(NBAuthorization *)auth;
+
+/* Right: org.nextbsd.settings.network. The ComputerName and the
+ * LocalHostName (a DNS label, without ".local"). */
++ (int)setComputerName:(NSString *)name
+         localHostName:(NSString *)localName
+         authorization:(NBAuthorization *)auth;
 
 @end
