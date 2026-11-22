@@ -46,6 +46,9 @@ enum
   NBAuthorizationInvalid = 7,
   NBAuthorizationUnsupported = 8,
   NBAuthorizationChangeFailed = 9,
+  NBAuthorizationExists = 10,
+  NBAuthorizationLastAdmin = 11,
+  NBAuthorizationLoggedIn = 12,
   NBAuthorizationUnavailable = 100
 };
 
