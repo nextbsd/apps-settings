@@ -90,4 +90,13 @@ NSString *const NBPMTTYSKeepAwake = @"ttyskeepawake";
                                  server != nil ? [server UTF8String] : "");
 }
 
++ (int)setSystemLocale:(NSString *)locale
+         authorization:(NBAuthorization *)auth
+{
+  if ([locale length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperSetSystemLocale ([[auth externalForm] bytes],
+                                  [locale UTF8String]);
+}
+
 @end

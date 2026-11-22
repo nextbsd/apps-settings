@@ -44,5 +44,8 @@ int NBHelperSetTimeZone (const char *form, const char *zone);
 int NBHelperSetDate (const char *form, int64_t seconds, int microseconds);
 int NBHelperSetNetworkTime (const char *form, int enabled,
                             const char *server);
+/* Language & Region's operation; form as above. locale: a name from
+ * /usr/share/locale ("de_DE.UTF-8"). */
+int NBHelperSetSystemLocale (const char *form, const char *locale);
 
 #endif

@@ -55,4 +55,11 @@ extern NSString *const NBPMTTYSKeepAwake;	/* ttyskeepawake */
                server:(NSString *)server
         authorization:(NBAuthorization *)auth;
 
+/* Right: org.nextbsd.settings.locale. The system's language, the
+ * default login class's: a locale from /usr/share/locale
+ * ("de_DE.UTF-8"), which accounts without their own get at their next
+ * login. */
++ (int)setSystemLocale:(NSString *)locale
+         authorization:(NBAuthorization *)auth;
+
 @end
