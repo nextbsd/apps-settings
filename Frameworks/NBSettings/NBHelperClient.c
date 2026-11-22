@@ -448,3 +448,84 @@ NBHelperSetSystemLocale (const char *form, const char *locale)
   NBHelperRelease (port);
   return status;
 }
+
+int
+NBHelperUpdateStatusGet (const char *form, NBHelperUpdateStatus *st)
+{
+  mach_port_t port = NBHelperPort ();
+  SHAuthForm f;
+  SHUpdateVersion available, installed;
+  SHUpdateText line;
+  boolean_t pending = FALSE, changed = FALSE;
+  int status = NBHelperUnavailable;
+
+  memset (st, 0, sizeof (*st));
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  memset (available, 0, sizeof (available));
+  memset (line, 0, sizeof (line));
+  memset (installed, 0, sizeof (installed));
+  if (sh_update_status (port, f, &st->job, &st->state, &pending, available,
+                        &st->size, &st->done, &st->total, line, &changed,
+                        &st->restart, installed, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  available[sizeof (available) - 1] = '\0';
+  line[sizeof (line) - 1] = '\0';
+  installed[sizeof (installed) - 1] = '\0';
+  strlcpy (st->restartVersion, installed, sizeof (st->restartVersion));
+  strlcpy (st->available, available, sizeof (st->available));
+  strlcpy (st->line, line, sizeof (st->line));
+  st->pending = pending ? 1 : 0;
+  st->changed = changed ? 1 : 0;
+  return status;
+}
+
+/* The update operations that take only the form. */
+static int
+NBHelperUpdateCall (const char *form,
+                    kern_return_t (*call) (mach_port_t, SHAuthForm, int *))
+{
+  mach_port_t port = NBHelperPort ();
+  SHAuthForm f;
+  int status = NBHelperUnavailable;
+
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (call (port, f, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
+int
+NBHelperUpdateCheck (const char *form)
+{
+  return NBHelperUpdateCall (form, sh_update_check);
+}
+
+int
+NBHelperUpdateDownload (const char *form)
+{
+  return NBHelperUpdateCall (form, sh_update_download);
+}
+
+int
+NBHelperUpdateInstall (const char *form)
+{
+  return NBHelperUpdateCall (form, sh_update_install);
+}
+
+int
+NBHelperUpdateCancel (const char *form)
+{
+  return NBHelperUpdateCall (form, sh_update_cancel);
+}
+
+int
+NBHelperUpdateRestart (const char *form)
+{
+  return NBHelperUpdateCall (form, sh_update_restart);
+}

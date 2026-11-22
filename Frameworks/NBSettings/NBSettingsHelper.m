@@ -33,6 +33,18 @@ NSString *const NBNetIPv6Router = @"IPv6Router";
 NSString *const NBNetDNSServers = @"DNSServers";
 NSString *const NBNetSearchDomains = @"SearchDomains";
 
+NSString *const NBUpdateJob = @"Job";
+NSString *const NBUpdateState = @"State";
+NSString *const NBUpdatePending = @"Pending";
+NSString *const NBUpdateAvailableVersion = @"AvailableVersion";
+NSString *const NBUpdateSize = @"Size";
+NSString *const NBUpdateDone = @"Done";
+NSString *const NBUpdateTotal = @"Total";
+NSString *const NBUpdateLine = @"Line";
+NSString *const NBUpdateChanged = @"Changed";
+NSString *const NBUpdateRestart = @"Restart";
+NSString *const NBUpdateRestartVersion = @"RestartVersion";
+
 /* A string setting as UTF-8, "" when it's absent. */
 static const char *
 NBNetString (NSDictionary *settings, NSString *key)
@@ -246,6 +258,55 @@ NBNetList (NSDictionary *settings, NSString *key)
     return NBAuthorizationInvalid;
   return NBHelperSetSystemLocale ([[auth externalForm] bytes],
                                   [locale UTF8String]);
+}
+
++ (int)updateStatus:(NSDictionary **)status
+      authorization:(NBAuthorization *)auth
+{
+  NBHelperUpdateStatus st;
+  int rc;
+
+  rc = NBHelperUpdateStatusGet ([[auth externalForm] bytes], &st);
+  *status = [NSDictionary dictionaryWithObjectsAndKeys:
+      [NSNumber numberWithInt:st.job], NBUpdateJob,
+      [NSNumber numberWithInt:st.state], NBUpdateState,
+      [NSNumber numberWithBool:st.pending != 0], NBUpdatePending,
+      [NSString stringWithUTF8String:st.available], NBUpdateAvailableVersion,
+      [NSNumber numberWithLongLong:st.size], NBUpdateSize,
+      [NSNumber numberWithLongLong:st.done], NBUpdateDone,
+      [NSNumber numberWithLongLong:st.total], NBUpdateTotal,
+      [NSString stringWithUTF8String:st.line], NBUpdateLine,
+      [NSNumber numberWithBool:st.changed != 0], NBUpdateChanged,
+      [NSNumber numberWithInt:st.restart], NBUpdateRestart,
+      [NSString stringWithUTF8String:st.restartVersion],
+      NBUpdateRestartVersion,
+      nil];
+  return rc;
+}
+
++ (int)checkForUpdateWithAuthorization:(NBAuthorization *)auth
+{
+  return NBHelperUpdateCheck ([[auth externalForm] bytes]);
+}
+
++ (int)downloadUpdateWithAuthorization:(NBAuthorization *)auth
+{
+  return NBHelperUpdateDownload ([[auth externalForm] bytes]);
+}
+
++ (int)installUpdateWithAuthorization:(NBAuthorization *)auth
+{
+  return NBHelperUpdateInstall ([[auth externalForm] bytes]);
+}
+
++ (int)cancelUpdateWithAuthorization:(NBAuthorization *)auth
+{
+  return NBHelperUpdateCancel ([[auth externalForm] bytes]);
+}
+
++ (int)restartForUpdateWithAuthorization:(NBAuthorization *)auth
+{
+  return NBHelperUpdateRestart ([[auth externalForm] bytes]);
 }
 
 @end

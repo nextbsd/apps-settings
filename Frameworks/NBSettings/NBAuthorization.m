@@ -179,6 +179,9 @@
              @"administrator first.";
     case NBAuthorizationLoggedIn:
       return @"That account is logged in at the computer's screen.";
+    case NBAuthorizationBusy:
+      return @"An update is already being checked for, downloaded or "
+             @"installed.";
     case NBAuthorizationUnavailable:
     default:
       return @"The settings helper (org.nextbsd.SettingsHelper) isn't "

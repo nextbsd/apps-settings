@@ -84,5 +84,28 @@ int NBHelperSetComputerName (const char *form, const char *computerName,
 /* Language & Region's operation; form as above. locale: a name from
  * /usr/share/locale ("de_DE.UTF-8"). */
 int NBHelperSetSystemLocale (const char *form, const char *locale);
+/* Update.app's operations; form as above. The jobs start and return at
+ * once; NBHelperUpdateStatusGet follows them. */
+typedef struct
+{
+  int job;			/* SH_UPDATE_JOB_* */
+  int state;			/* SH_UPDATE_* */
+  int pending;			/* a check found an update */
+  char available[64];		/* its version, "" if unknown */
+  int64_t size;
+  int64_t done;
+  int64_t total;
+  char line[128];
+  int changed;
+  int restart;			/* SH_UPDATE_RESTART_* */
+  char restartVersion[64];	/* the update installed, "" if unknown */
+} NBHelperUpdateStatus;
+
+int NBHelperUpdateStatusGet (const char *form, NBHelperUpdateStatus *status);
+int NBHelperUpdateCheck (const char *form);
+int NBHelperUpdateDownload (const char *form);
+int NBHelperUpdateInstall (const char *form);
+int NBHelperUpdateCancel (const char *form);
+int NBHelperUpdateRestart (const char *form);
 
 #endif
