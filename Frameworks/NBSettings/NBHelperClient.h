@@ -44,5 +44,10 @@ int NBHelperSetTimeZone (const char *form, const char *zone);
 int NBHelperSetDate (const char *form, int64_t seconds, int microseconds);
 int NBHelperSetNetworkTime (const char *form, int enabled,
                             const char *server);
+/* CUPSAdmin: op is SH_CUPS_ADD or SH_CUPS_DELETE; uri, info and
+ * location are "" for a delete. */
+int NBHelperCUPSAdmin (const char *form, int op, const char *printer,
+                       const char *uri, const char *info,
+                       const char *location);
 
 #endif

@@ -14,6 +14,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `DateTime/` | Date & Time.app | Network time and its server, the date and time by hand, the time zone, the Dock clock's format |
 | `Trackpad/` | Trackpad.app   | Tap to click, tap and drag, three-finger drag, secondary click, tracking speed, natural and momentum scrolling, scroll speed |
 | `Mouse/`    | Mouse.app      | Tracking speed, pointer acceleration, primary button, double-click speed, natural scrolling, scroll speed |
+| `Printers/` | Printers.app   | The printers with their status and waiting jobs, adding nearby driverless printers or one by address, removing them, the default printer, paper size and two-sided printing |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -91,6 +92,20 @@ Sound has no daemon to talk to; it reads the devices themselves
   `NSGlobalDomain` (the user's value, else the theme's Info.plist, else
   Tink at 75%). Choosing one plays it. The backend's `NSBeep` doesn't play
   it yet; that's libs-back's side.
+
+Printers talks to the local cupsd (`org.nextbsd.cupsd`, from
+nextbsd-printing-support) through libcups, as the user: the queues and
+their jobs (`cupsEnumDests`, `cupsGetJobs2`), the driverless (IPP
+Everywhere) printers nearby that libcups finds through mDNSResponder, and
+what a printer offers for paper size and two-sided printing
+(`cupsCopyDestInfo`). The default printer, paper size and two-sided are
+the user's own, in `~/.cups/lpoptions` (`cupsSetDests2`, as `lpoptions`
+does), and need no privilege. Adding and removing a printer go through
+the helper's `CUPSAdmin` (right `org.nextbsd.settings.printers`,
+`is-admin`), which runs `lpadmin -m everywhere` as root; only driverless
+printers can be added until nextbsd-printing-support has filters and
+drivers. Printing is optional, so Printers.app is meant to ship with that
+package rather than the desktop's core.
 
 ## Show X in Dock
 

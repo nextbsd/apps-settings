@@ -90,4 +90,27 @@ NSString *const NBPMTTYSKeepAwake = @"ttyskeepawake";
                                  server != nil ? [server UTF8String] : "");
 }
 
++ (int)addPrinter:(NSString *)name
+              uri:(NSString *)uri
+             info:(NSString *)info
+         location:(NSString *)location
+    authorization:(NBAuthorization *)auth
+{
+  if ([name length] == 0 || [uri length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperCUPSAdmin ([[auth externalForm] bytes], SH_CUPS_ADD,
+                            [name UTF8String], [uri UTF8String],
+                            info != nil ? [info UTF8String] : "",
+                            location != nil ? [location UTF8String] : "");
+}
+
++ (int)removePrinter:(NSString *)name
+       authorization:(NBAuthorization *)auth
+{
+  if ([name length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperCUPSAdmin ([[auth externalForm] bytes], SH_CUPS_DELETE,
+                            [name UTF8String], "", "", "");
+}
+
 @end
