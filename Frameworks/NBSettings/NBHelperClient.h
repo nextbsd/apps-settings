@@ -61,5 +61,25 @@ int NBHelperSetLoginWindowOptions (const char *form, int showNameFields,
 int NBHelperCUPSAdmin (const char *form, int op, const char *printer,
                        const char *uri, const char *info,
                        const char *location);
+/* The Network operations; form as above. Each string must fit its wire
+ * field (settingshelper_types.h); a list has one entry a line, and NULL
+ * is empty. */
+typedef struct
+{
+  const char *serviceID;
+  int ipv4Method;		/* SH_NET_V4_* */
+  const char *ipv4Address, *ipv4Mask, *ipv4Router;
+  int ipv6Method;		/* SH_NET_V6_* */
+  const char *ipv6Address;
+  int ipv6Prefix;
+  const char *ipv6Router;
+  const char *dnsServers;
+  const char *searchDomains;
+} NBHelperNetworkService;
+
+int NBHelperCommitNetworkPreferences (const char *form,
+                                      const NBHelperNetworkService *service);
+int NBHelperSetComputerName (const char *form, const char *computerName,
+                             const char *localHostName);
 
 #endif

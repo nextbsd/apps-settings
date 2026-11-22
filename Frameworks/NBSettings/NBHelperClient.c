@@ -360,3 +360,69 @@ NBHelperCUPSAdmin (const char *form, int op, const char *printer,
   NBHelperRelease (port);
   return status;
 }
+
+/* Copy a string into a fixed wire field; false if it doesn't fit. */
+static int
+NBHelperField (char *field, size_t size, const char *s)
+{
+  memset (field, 0, size);
+  if (s == NULL)
+    return 1;
+  return strlcpy (field, s, size) < size;
+}
+
+int
+NBHelperCommitNetworkPreferences (const char *form,
+                                  const NBHelperNetworkService *s)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHNetServiceID id;
+  SHNetAddress a4, m4, r4, a6, r6;
+  SHNetList dns, search;
+  int status = NBHelperUnavailable;
+
+  if (!NBHelperField (id, sizeof (id), s->serviceID)
+      || !NBHelperField (a4, sizeof (a4), s->ipv4Address)
+      || !NBHelperField (m4, sizeof (m4), s->ipv4Mask)
+      || !NBHelperField (r4, sizeof (r4), s->ipv4Router)
+      || !NBHelperField (a6, sizeof (a6), s->ipv6Address)
+      || !NBHelperField (r6, sizeof (r6), s->ipv6Router)
+      || !NBHelperField (dns, sizeof (dns), s->dnsServers)
+      || !NBHelperField (search, sizeof (search), s->searchDomains))
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (sh_commit_network_preferences (port, f, id, s->ipv4Method, a4, m4, r4,
+                                     s->ipv6Method, a6, s->ipv6Prefix, r6,
+                                     dns, search, &status)
+      != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
+int
+NBHelperSetComputerName (const char *form, const char *computerName,
+                         const char *localHostName)
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHComputerName c;
+  SHLocalHostName l;
+  int status = NBHelperUnavailable;
+
+  if (!NBHelperField (c, sizeof (c), computerName)
+      || !NBHelperField (l, sizeof (l), localHostName))
+    return SH_ERR_INVALID;
+  port = NBHelperPort ();
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (sh_set_computer_name (port, f, c, l, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}

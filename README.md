@@ -16,6 +16,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `Mouse/`    | Mouse.app      | Tracking speed, pointer acceleration, primary button, double-click speed, natural scrolling, scroll speed |
 | `UsersLogin/` | Users & Login.app | The local accounts (add, delete, passwords, administrators), automatic login, the login window's list or name and password fields, its Restart and Shut Down buttons |
 | `Printers/` | Printers.app   | The printers with their status and waiting jobs, adding nearby driverless printers or one by address, removing them, the default printer, paper size and two-sided printing |
+| `Network/`  | Network.app    | The network services and their status, IPv4, IPv6, DNS servers and search domains, the hardware address, Wi-Fi networks and joining them (WPA Personal and Enterprise), the computer's name, the Dock's Wi-Fi extra |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -130,6 +131,23 @@ the helper's `CUPSAdmin` (right `org.nextbsd.settings.printers`,
 printers can be added until nextbsd-printing-support has filters and
 drivers. Printing is optional, so Printers.app is meant to ship with that
 package rather than the desktop's core.
+
+Network reads the network services as the user from configd: their
+settings from SCPreferences (`preferences.plist`) and what they have now
+from the dynamic store (`State:/Network/...`), with the names hostnamed
+publishes. As on macOS, changes wait for Apply, which sends each changed
+service to the helper's `CommitNetworkPreferences` (its IPv4, IPv6 and
+DNS settings, which the helper writes, commits and applies, so ipconfigd
+configures the service again) and the names to `SetComputerName` (right
+`org.nextbsd.settings.network`). Wi-Fi needs no privilege: Network scans
+and joins through wland's MIG interface (`org.nextbsd.wlan`), with the
+build making the client stubs from a copy of nextbsd-userland's
+`src/WLAN/wlan.defs` (in `Network/mig`), and reads the joined network
+from wland's `State:/Network/Interface/<if>/AirPort` entry, as the Dock's
+Wi-Fi extra does. Turning Wi-Fi on and off, and the known networks, wait
+for wland calls that don't exist yet. Its **Show Wi-Fi status in Dock**
+checkbox turns the Dock's Wi-Fi extra on and off, and the extra's "Open
+Network Settings…" opens it on the Wi-Fi service.
 
 ## Show X in Dock
 

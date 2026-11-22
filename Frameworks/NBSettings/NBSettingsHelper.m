@@ -9,6 +9,7 @@
 #include "settingshelper_types.h"
 
 #include <math.h>
+#include <string.h>
 
 NSString *const NBPowerSourceAC = @"AC Power";
 NSString *const NBPowerSourceBattery = @"Battery Power";
@@ -20,6 +21,37 @@ NSString *const NBPMDiskSleep = @"disksleep";
 NSString *const NBPMWakeOnLAN = @"womp";
 NSString *const NBPMReduceBrightness = @"lessbright";
 NSString *const NBPMTTYSKeepAwake = @"ttyskeepawake";
+
+NSString *const NBNetIPv4Method = @"IPv4Method";
+NSString *const NBNetIPv4Address = @"IPv4Address";
+NSString *const NBNetIPv4SubnetMask = @"IPv4SubnetMask";
+NSString *const NBNetIPv4Router = @"IPv4Router";
+NSString *const NBNetIPv6Method = @"IPv6Method";
+NSString *const NBNetIPv6Address = @"IPv6Address";
+NSString *const NBNetIPv6PrefixLength = @"IPv6PrefixLength";
+NSString *const NBNetIPv6Router = @"IPv6Router";
+NSString *const NBNetDNSServers = @"DNSServers";
+NSString *const NBNetSearchDomains = @"SearchDomains";
+
+/* A string setting as UTF-8, "" when it's absent. */
+static const char *
+NBNetString (NSDictionary *settings, NSString *key)
+{
+  id value = [settings objectForKey:key];
+
+  return [value isKindOfClass:[NSString class]] ? [value UTF8String] : "";
+}
+
+/* A list setting, one entry a line. */
+static const char *
+NBNetList (NSDictionary *settings, NSString *key)
+{
+  id value = [settings objectForKey:key];
+
+  if (![value isKindOfClass:[NSArray class]])
+    return "";
+  return [[value componentsJoinedByString:@"\n"] UTF8String];
+}
 
 @implementation NBSettingsHelper
 
@@ -171,6 +203,40 @@ NSString *const NBPMTTYSKeepAwake = @"ttyskeepawake";
     return NBAuthorizationInvalid;
   return NBHelperCUPSAdmin ([[auth externalForm] bytes], SH_CUPS_DELETE,
                             [name UTF8String], "", "", "");
+}
+
+
++ (int)commitNetworkService:(NSString *)serviceID
+                   settings:(NSDictionary *)settings
+              authorization:(NBAuthorization *)auth
+{
+  NBHelperNetworkService s;
+
+  if ([serviceID length] == 0)
+    return NBAuthorizationInvalid;
+  memset (&s, 0, sizeof (s));
+  s.serviceID = [serviceID UTF8String];
+  s.ipv4Method = [[settings objectForKey:NBNetIPv4Method] intValue];
+  s.ipv4Address = NBNetString (settings, NBNetIPv4Address);
+  s.ipv4Mask = NBNetString (settings, NBNetIPv4SubnetMask);
+  s.ipv4Router = NBNetString (settings, NBNetIPv4Router);
+  s.ipv6Method = [[settings objectForKey:NBNetIPv6Method] intValue];
+  s.ipv6Address = NBNetString (settings, NBNetIPv6Address);
+  s.ipv6Prefix = [[settings objectForKey:NBNetIPv6PrefixLength] intValue];
+  s.ipv6Router = NBNetString (settings, NBNetIPv6Router);
+  s.dnsServers = NBNetList (settings, NBNetDNSServers);
+  s.searchDomains = NBNetList (settings, NBNetSearchDomains);
+  return NBHelperCommitNetworkPreferences ([[auth externalForm] bytes], &s);
+}
+
++ (int)setComputerName:(NSString *)name
+         localHostName:(NSString *)localName
+         authorization:(NBAuthorization *)auth
+{
+  if ([name length] == 0 || [localName length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperSetComputerName ([[auth externalForm] bytes],
+                                  [name UTF8String], [localName UTF8String]);
 }
 
 @end
