@@ -41,10 +41,5 @@ LanguageRegion_GUI_LIBS += -llaunch -lsystem_kernel -lutil
 include $(GNUSTEP_MAKEFILES)/application.make
 
 # Installed under its real name, replacing an earlier install of either.
-INSTALLED_APPS = $(DESTDIR)$(GNUSTEP_APPS)
-after-install::
-	rm -rf "$(INSTALLED_APPS)/Language & Region.app"
-	mv "$(INSTALLED_APPS)/LanguageRegion.app" "$(INSTALLED_APPS)/Language & Region.app"
-
-after-uninstall::
-	rm -rf "$(INSTALLED_APPS)/Language & Region.app"
+INSTALL_NAME = Language & Region
+include ../Shared/InstallName.make
