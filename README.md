@@ -14,6 +14,8 @@ they move to `/System/Applications` once they have been tested on their own:
 | `DateTime/` | Date & Time.app | Network time and its server, the date and time by hand, the time zone, the Dock clock's format |
 | `Trackpad/` | Trackpad.app   | Tap to click, tap and drag, three-finger drag, secondary click, tracking speed, natural and momentum scrolling, scroll speed |
 | `Mouse/`    | Mouse.app      | Tracking speed, pointer acceleration, primary button, double-click speed, natural scrolling, scroll speed |
+| `UsersLogin/` | Users & Login.app | The local accounts (add, delete, passwords, administrators), automatic login, the login window's list or name and password fields, its Restart and Shut Down buttons |
+| `Printers/` | Printers.app   | The printers with their status and waiting jobs, adding nearby driverless printers or one by address, removing them, the default printer, paper size and two-sided printing |
 | `Network/`  | Network.app    | The network services and their status, IPv4, IPv6, DNS servers and search domains, the hardware address, Wi-Fi networks and joining them (WPA Personal and Enterprise), the computer's name, the Dock's Wi-Fi extra |
 
 Displays talks to NextBSD's WindowServer through its client library
@@ -92,6 +94,43 @@ Sound has no daemon to talk to; it reads the devices themselves
   `NSGlobalDomain` (the user's value, else the theme's Info.plist, else
   Tink at 75%). Choosing one plays it. The backend's `NSBeep` doesn't play
   it yet; that's libs-back's side.
+
+Users & Login lists the local accounts from the directory's own files,
+`/Local/Library/DirectoryServices/Users.plist` and `Groups.plist` (group
+`admin`'s members are the administrators), and reads them again whenever
+they change, so an account made with `adduser` shows at once. It changes
+them through the helper's `CreateUser`, `DeleteUser`, `SetPassword` and
+`SetAdmin` (right `org.nextbsd.settings.users`), which follow `adduser`'s,
+`rmuser`'s and `passwd`'s rules through libds. The helper won't delete the
+account logged in at the screen or the last administrator. With the lock
+closed you can still change your own password: you give your old one, which
+proves `org.nextbsd.settings.users.own-password` for that one change. On a
+machine joined to a directory server the list is read-only, since the
+accounts are the server's.
+
+Its Login Options are keys of
+`/Local/Library/Preferences/org.nextbsd.loginwindow.plist`, with the names
+macOS's loginwindow uses, written by `SetAutoLogin` and
+`SetLoginWindowOptions`: `autoLoginUser` (absent: autologin-user's own rule,
+the only account, `admin`, without a password; empty: off), `SHOWFULLNAME`,
+`RestartDisabled` and `ShutDownDisabled`. Only an account without a password
+can log in automatically; it never stands in for one. They apply at the next
+login window, once autologin-user and loginwindow read them. It's built as
+`UsersLogin.app` and installed as `Users & Login.app`, as Date & Time is.
+
+Printers talks to the local cupsd (`org.nextbsd.cupsd`, from
+nextbsd-printing-support) through libcups, as the user: the queues and
+their jobs (`cupsEnumDests`, `cupsGetJobs2`), the driverless (IPP
+Everywhere) printers nearby that libcups finds through mDNSResponder, and
+what a printer offers for paper size and two-sided printing
+(`cupsCopyDestInfo`). The default printer, paper size and two-sided are
+the user's own, in `~/.cups/lpoptions` (`cupsSetDests2`, as `lpoptions`
+does), and need no privilege. Adding and removing a printer go through
+the helper's `CUPSAdmin` (right `org.nextbsd.settings.printers`,
+`is-admin`), which runs `lpadmin -m everywhere` as root; only driverless
+printers can be added until nextbsd-printing-support has filters and
+drivers. Printing is optional, so Printers.app is meant to ship with that
+package rather than the desktop's core.
 
 Network reads the network services as the user from configd: their
 settings from SCPreferences (`preferences.plist`) and what they have now

@@ -172,6 +172,13 @@
       return @"This computer doesn't support that setting.";
     case NBAuthorizationChangeFailed:
       return @"The change couldn't be made.";
+    case NBAuthorizationExists:
+      return @"There's already an account with that name.";
+    case NBAuthorizationLastAdmin:
+      return @"That's the only administrator. Make another account an "
+             @"administrator first.";
+    case NBAuthorizationLoggedIn:
+      return @"That account is logged in at the computer's screen.";
     case NBAuthorizationUnavailable:
     default:
       return @"The settings helper (org.nextbsd.SettingsHelper) isn't "

@@ -122,6 +122,89 @@ NBNetList (NSDictionary *settings, NSString *key)
                                  server != nil ? [server UTF8String] : "");
 }
 
++ (int)createUser:(NSString *)user
+         fullName:(NSString *)fullName
+         password:(NSString *)password
+            admin:(BOOL)admin
+    authorization:(NBAuthorization *)auth
+{
+  if ([user length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperCreateUser ([[auth externalForm] bytes], [user UTF8String],
+                             fullName != nil ? [fullName UTF8String] : "",
+                             password != nil ? [password UTF8String] : "",
+                             admin ? 1 : 0);
+}
+
++ (int)deleteUser:(NSString *)user
+         keepHome:(BOOL)keepHome
+    authorization:(NBAuthorization *)auth
+{
+  if ([user length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperDeleteUser ([[auth externalForm] bytes], [user UTF8String],
+                             keepHome ? 1 : 0);
+}
+
++ (int)setPassword:(NSString *)password
+           forUser:(NSString *)user
+     authorization:(NBAuthorization *)auth
+{
+  if ([user length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperSetPassword ([[auth externalForm] bytes], [user UTF8String],
+                              password != nil ? [password UTF8String] : "");
+}
+
++ (int)setAdmin:(BOOL)admin
+        forUser:(NSString *)user
+  authorization:(NBAuthorization *)auth
+{
+  if ([user length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperSetAdmin ([[auth externalForm] bytes], [user UTF8String],
+                           admin ? 1 : 0);
+}
+
++ (int)setAutoLoginUser:(NSString *)user
+          authorization:(NBAuthorization *)auth
+{
+  return NBHelperSetAutoLogin ([[auth externalForm] bytes],
+                               user != nil ? [user UTF8String] : "");
+}
+
++ (int)setLoginWindowShowsNameFields:(BOOL)nameFields
+                        powerButtons:(BOOL)powerButtons
+                       authorization:(NBAuthorization *)auth
+{
+  return NBHelperSetLoginWindowOptions ([[auth externalForm] bytes],
+                                        nameFields ? 1 : 0,
+                                        powerButtons ? 1 : 0);
+}
+
++ (int)addPrinter:(NSString *)name
+              uri:(NSString *)uri
+             info:(NSString *)info
+         location:(NSString *)location
+    authorization:(NBAuthorization *)auth
+{
+  if ([name length] == 0 || [uri length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperCUPSAdmin ([[auth externalForm] bytes], SH_CUPS_ADD,
+                            [name UTF8String], [uri UTF8String],
+                            info != nil ? [info UTF8String] : "",
+                            location != nil ? [location UTF8String] : "");
+}
+
++ (int)removePrinter:(NSString *)name
+       authorization:(NBAuthorization *)auth
+{
+  if ([name length] == 0)
+    return NBAuthorizationInvalid;
+  return NBHelperCUPSAdmin ([[auth externalForm] bytes], SH_CUPS_DELETE,
+                            [name UTF8String], "", "", "");
+}
+
 
 + (int)commitNetworkService:(NSString *)serviceID
                    settings:(NSDictionary *)settings

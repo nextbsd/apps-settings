@@ -10,6 +10,6 @@ endif
 include $(GNUSTEP_MAKEFILES)/common.make
 
 SUBPROJECTS = Displays Bluetooth Energy Keyboard Sound DateTime Trackpad Mouse \
-	Network
+	UsersLogin Printers Network
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
