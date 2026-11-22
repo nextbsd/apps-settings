@@ -8,10 +8,10 @@
 # Installed like the other desktop apps, in the USER domain
 # (~/Applications) for now.
 #
-# The bundle is DateTime.app: gnustep-make names its variables after the
-# app (DateTime_OBJC_FILES), so the name can't hold a space or "&". The
-# name people see, in the menu, the window and the About panel, is
-# "Date & Time" (DateTimeInfo.plist).
+# It's built as DateTime.app: gnustep-make names its variables after the
+# app (DateTime_OBJC_FILES), so the name can't hold a space or "&". It's
+# installed as "Date & Time.app", the name people see in the File
+# Viewer, the Dock and the menu (DateTimeInfo.plist), as on macOS.
 
 ifeq ($(GNUSTEP_MAKEFILES),)
  GNUSTEP_MAKEFILES := $(shell gnustep-config --variable=GNUSTEP_MAKEFILES)
@@ -36,3 +36,12 @@ ADDITIONAL_LDFLAGS += -L$(SYSTEM_LIBDIR) -Wl,-rpath,$(SYSTEM_LIBDIR)
 DateTime_GUI_LIBS += -llaunch -lsystem_kernel
 
 include $(GNUSTEP_MAKEFILES)/application.make
+
+# Installed under its real name, replacing an earlier install of either.
+INSTALLED_APPS = $(DESTDIR)$(GNUSTEP_APPS)
+after-install::
+	rm -rf "$(INSTALLED_APPS)/Date & Time.app"
+	mv "$(INSTALLED_APPS)/DateTime.app" "$(INSTALLED_APPS)/Date & Time.app"
+
+after-uninstall::
+	rm -rf "$(INSTALLED_APPS)/Date & Time.app"

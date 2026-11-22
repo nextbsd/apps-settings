@@ -51,9 +51,9 @@ root's `ntpd` runs (`org.nextbsd.ntpd`), with the server from
 Clock tab needs no privilege: it writes the Dock clock extra's own
 defaults (`DockExtraClock*` in the Dock's domain, `Dock`), key by key,
 and posts the distributed notification `org.nextbsd.SettingsChanged`
-(userInfo `domain` and `keys`), on which the clock reads them again. The
-bundle is `DateTime.app`, since gnustep-make can't name an app with a
-space or `&`; it calls itself "Date & Time".
+(userInfo `domain` and `keys`), on which the clock reads them again. It's
+built as `DateTime.app`, since gnustep-make can't name an app with a
+space or `&`, and installed as `Date & Time.app`.
 
 `Frameworks/NBSettings` is what the apps share, compiled into each app that
 lists it as a gnustep-make subproject (`xxx_SUBPROJECTS =
