@@ -107,5 +107,10 @@ int NBHelperUpdateDownload (const char *form);
 int NBHelperUpdateInstall (const char *form);
 int NBHelperUpdateCancel (const char *form);
 int NBHelperUpdateRestart (const char *form);
+/* Installed Versions: boot environments on a ZFS install
+ * (nextbsd/nextbsd#703). */
+int NBHelperUpdateStartVersion (const char *form, const char *version);
+int NBHelperUpdateRemoveVersion (const char *form, const char *version);
+int NBHelperUpdateSetKeep (const char *form, int keep);
 
 #endif
