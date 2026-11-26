@@ -214,4 +214,15 @@ enum
  * (NBUpdateRestartPending). */
 + (int)restartForUpdateWithAuthorization:(NBAuthorization *)auth;
 
+/* Installed Versions (nextbsd/nextbsd#703): on a ZFS install each update
+ * is a boot environment named after its version. Start one (it becomes
+ * the one that starts, then the computer restarts), remove one, or set
+ * how many an update keeps (2 to 10). The update right, an
+ * administrator. */
++ (int)startVersion:(NSString *)version
+      authorization:(NBAuthorization *)auth;
++ (int)removeVersion:(NSString *)version
+       authorization:(NBAuthorization *)auth;
++ (int)setKeepVersions:(int)keep authorization:(NBAuthorization *)auth;
+
 @end

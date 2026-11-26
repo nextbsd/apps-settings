@@ -529,3 +529,54 @@ NBHelperUpdateRestart (const char *form)
 {
   return NBHelperUpdateCall (form, sh_update_restart);
 }
+
+static int
+NBHelperVersionCall (const char *form, const char *version,
+                     kern_return_t (*call) (mach_port_t, SHAuthForm,
+                                            SHUpdateVersion, int *))
+{
+  mach_port_t port;
+  SHAuthForm f;
+  SHUpdateVersion v;
+  int status = NBHelperUnavailable;
+
+  if (version == NULL || strlen (version) >= sizeof (v))
+    return NBHelperUnavailable;
+  if ((port = NBHelperPort ()) == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  memset (v, 0, sizeof (v));
+  strlcpy (v, version, sizeof (v));
+  if (call (port, f, v, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}
+
+int
+NBHelperUpdateStartVersion (const char *form, const char *version)
+{
+  return NBHelperVersionCall (form, version, sh_update_start_version);
+}
+
+int
+NBHelperUpdateRemoveVersion (const char *form, const char *version)
+{
+  return NBHelperVersionCall (form, version, sh_update_remove_version);
+}
+
+int
+NBHelperUpdateSetKeep (const char *form, int keep)
+{
+  mach_port_t port = NBHelperPort ();
+  SHAuthForm f;
+  int status = NBHelperUnavailable;
+
+  if (port == MACH_PORT_NULL)
+    return NBHelperUnavailable;
+  memcpy (f, form, sizeof (f));
+  if (sh_update_set_keep (port, f, keep, &status) != KERN_SUCCESS)
+    status = NBHelperUnavailable;
+  NBHelperRelease (port);
+  return status;
+}

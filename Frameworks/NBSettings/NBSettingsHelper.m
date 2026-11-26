@@ -309,4 +309,23 @@ NBNetList (NSDictionary *settings, NSString *key)
   return NBHelperUpdateRestart ([[auth externalForm] bytes]);
 }
 
++ (int)startVersion:(NSString *)version
+      authorization:(NBAuthorization *)auth
+{
+  return NBHelperUpdateStartVersion ([[auth externalForm] bytes],
+                                     [version UTF8String]);
+}
+
++ (int)removeVersion:(NSString *)version
+       authorization:(NBAuthorization *)auth
+{
+  return NBHelperUpdateRemoveVersion ([[auth externalForm] bytes],
+                                      [version UTF8String]);
+}
+
++ (int)setKeepVersions:(int)keep authorization:(NBAuthorization *)auth
+{
+  return NBHelperUpdateSetKeep ([[auth externalForm] bytes], keep);
+}
+
 @end
