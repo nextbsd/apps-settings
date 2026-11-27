@@ -19,6 +19,7 @@ they move to `/System/Applications` once they have been tested on their own:
 | `Network/`  | Network.app    | The network services and their status, IPv4, IPv6, DNS servers and search domains, the hardware address, Wi-Fi networks and joining them (WPA Personal and Enterprise), the computer's name, the Dock's Wi-Fi extra |
 | `LanguageRegion/` | Language & Region.app | Preferred languages, the region and its formats (first day of the week, calendar, 24-hour time, measurement units, temperature) with a preview, the terminal's locale, the system's language |
 | `Webcam/`   | Webcam.app     | The camera's live view, photos with a countdown and flash, video recordings, recent captures, the camera to use |
+| `Screenshot/` | Screenshot.app | Not a setting: pictures and recordings of the screen, the Command+Shift+5 toolbar and what the screenshot keys ask for (nextbsd/nextbsd#715) |
 
 Displays talks to NextBSD's WindowServer through its client library
 (`libWindowServerClient`, found with `pkg-config WindowServerClient`). With a
@@ -173,6 +174,18 @@ only `WCCapture.c`'s backend table changes. NextBSD has no
 part of V4L2 the app uses. Base's libavcodec has no video encoders, so
 recordings are written with libjpeg (`WCRecorder.c`); their format is
 nextbsd/nextbsd#660. Recordings have no sound yet.
+
+Screenshot takes pictures and recordings of the screen, as macOS's
+Screenshot: WindowServer takes Command+Shift+3, 4 and 5 and Print Screen
+in every app and the Dock hands them to it, and opening the app opens the
+same toolbar. It must be installed in `/System/Applications`, where
+WindowServer trusts it to capture without asking for consent
+(`CaptureTrustedApps`; a copy anywhere else asks like any app). It talks
+to WindowServer through its client library, and records by piping the
+capture stream into the `ffmpeg` that ships with NextBSD, so it links no
+ffmpeg library. Other apps (Video's New Screen Recording) start a
+recording with `Screenshot -Record screen`. `Screenshot/README.md` has the
+details and the interface for other apps.
 
 ## Show X in Dock
 

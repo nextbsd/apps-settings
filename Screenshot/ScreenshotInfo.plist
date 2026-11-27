@@ -1,0 +1,20 @@
+{
+  ApplicationName = Screenshot;
+  ApplicationDescription = "Pictures and recordings of the screen";
+  ApplicationRelease = "27.0";
+  Authors = ("Joseph Maloney <pkgdemonteam@gmail.com>");
+  URL = "License: BSD 2-Clause";
+  Copyright = "Copyright (C) 2026 Joseph Maloney";
+  NSHumanReadableCopyright = "Copyright (C) 2026 Joseph Maloney";
+  NSPrincipalClass = NSApplication;
+  NSIcon = "Screenshot.png";
+  CFBundleIconFile = "Screenshot.png";
+  NSExecutable = Screenshot;
+  CFBundleIdentifier = "org.nextbsd.Screenshot";
+  CFBundleName = Screenshot;
+  CFBundleDisplayName = Screenshot;
+  CFBundleShortVersionString = "27.0";
+  CFBundleVersion = "27.0";
+  /* An agent, as on macOS: no Dock item while it runs. */
+  LSUIElement = YES;
+}
