@@ -63,6 +63,10 @@ typedef enum
   NBRuleAuthenticateSessionOwner = 4
 } NBAuthorizationRule;
 
+/* Seconds on a clock that only moves forward: for timeouts, which must
+   not trust the date. The Pi starts in 1970, and Date & Time sets it. */
+NSTimeInterval NBMonotonicTime (void);
+
 @interface NBAuthorization : NSObject
 {
   NSString *_right;

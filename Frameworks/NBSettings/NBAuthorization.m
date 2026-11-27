@@ -11,8 +11,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <time.h>
 
 #define NBAuthFormSize 32	/* SH_AUTH_FORM_SIZE */
+
+NSTimeInterval
+NBMonotonicTime (void)
+{
+  struct timespec ts;
+
+  clock_gettime (CLOCK_MONOTONIC, &ts);
+  return ts.tv_sec + ts.tv_nsec / 1e9;
+}
 
 @implementation NBAuthorization
 
@@ -41,7 +51,7 @@
 - (int)refresh
 {
   NBHelperRightInfo info;
-  NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+  NSTimeInterval now = NBMonotonicTime ();
 
   _status = NBHelperRightInfoGet ([_right UTF8String], &info);
   _rule = _status == NBAuthorizationOK ? (NBAuthorizationRule) info.rule
@@ -78,7 +88,9 @@
 
   if (_forever)
     return 1e9;
-  left = _expires - [NSDate timeIntervalSinceReferenceDate];
+  if (_expires == 0)
+    return 0;
+  left = _expires - NBMonotonicTime ();
   return left > 0 ? left : 0;
 }
 
@@ -128,7 +140,7 @@
       if (_rule == NBRuleAllow || _rule == NBRuleIsAdmin)
         _forever = YES;
       else
-        _expires = [NSDate timeIntervalSinceReferenceDate] + seconds;
+        _expires = NBMonotonicTime () + seconds;
     }
   return status;
 }
