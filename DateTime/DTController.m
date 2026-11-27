@@ -632,7 +632,7 @@ enum
 {
   [lockView update];
   if (dockAskedAt != 0
-      && [NSDate timeIntervalSinceReferenceDate] - dockAskedAt
+      && NBMonotonicTime () - dockAskedAt
          > DTDockAnswerSeconds)
     {
       /* No Dock running: its list is ours to write. */
@@ -672,7 +672,7 @@ enum
       tzset ();
       [NSTimeZone resetSystemTimeZone];
     }
-  if ([NSDate timeIntervalSinceReferenceDate] < expectedUntil)
+  if (NBMonotonicTime () < expectedUntil)
     networkTime = expectedNetworkTime;
   else
     networkTime = DTNetworkTimeRunning () != 0;
@@ -891,7 +891,7 @@ enum
     return;
   dockHidden = hidden;
   dockAskedHidden = hidden;
-  dockAskedAt = [NSDate timeIntervalSinceReferenceDate];
+  dockAskedAt = NBMonotonicTime ();
   [[NSDistributedNotificationCenter defaultCenter]
       postNotificationName:DTDockSetHidden
                     object:nil
@@ -1018,7 +1018,7 @@ enum
   if (status == NBAuthorizationOK && op == DTOpNetworkTime)
     {
       expectedNetworkTime = [[value objectForKey:@"enabled"] boolValue];
-      expectedUntil = [NSDate timeIntervalSinceReferenceDate]
+      expectedUntil = NBMonotonicTime ()
         + DTNetworkTimeSettle;
     }
   return status == NBAuthorizationOK;
